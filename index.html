@@ -83,7 +83,13 @@
                 lastVideoIndex = videoIndex;
 
                 // Update the video for the player
-                player.loadVideoById(videos[videoIndex].id);
+                player.loadVideoById({
+                    videoId: videos[videoIndex].id,
+                    playerVars: {
+                        cc_lang_pref: 'zh',
+                        cc_load_policy: 1
+                    }
+                });
             }
         }
 
@@ -94,7 +100,7 @@
 
         function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
-                playRandomVideo(); // Play another video when current ends
+                playRandomVideo(); // Play another video when the current one ends
             }
         }
 
