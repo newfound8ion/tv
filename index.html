@@ -27,17 +27,9 @@
             cursor: pointer;
             margin: 0 10px;
         }
-        #logo {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            height: 50px;
-        }
     </style>
 </head>
 <body>
-    <img id="logo" src="https://raw.githubusercontent.com/newfound8ion/tv/main/download.png" alt="Logo">
     <div id="player"></div>
     <div id="controls">
         <span id="mute-btn" class="control-btn">Unmute</span>
@@ -57,11 +49,13 @@
         var lastVideoIndex = null;
         var videos = [];
 
-        function onYouTubeIframeAPIReady() {
+        window.onYouTubeIframeAPIReady = function() {
+            console.log('YouTube API ready');
             fetch('videos.json')
                 .then(response => response.json())
                 .then(data => {
                     videos = data;
+                    console.log('Video data fetched', videos);
                     playRandomVideo(); // Play a video when the API is ready
                 });
         }
@@ -75,6 +69,7 @@
             lastVideoIndex = videoIndex;
 
             var video = videos[videoIndex];
+            console.log('Playing video', video);
             currentPlatform = video.platform;
 
             // Remove old player
