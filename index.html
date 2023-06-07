@@ -53,12 +53,12 @@
     </style>
 </head>
 <body>
-    <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" alt="Newlife TV">
-    <div id="player"></div>
     <div id="controls">
         <button id="mute-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg></button>
-        <button id="refresh-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" /></svg></button>
+        <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" alt="Newlife TV">
+        <button id="next-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg></button>
     </div>
+    <div id="player"></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
@@ -73,7 +73,7 @@
             { "id": "W3pTt44rybA" },
             { "id": "X9RYuvPCQUA" },
             { "id": "X9RYuvPCQUA" },
-            { "id": "ipa5xG1wPl0" },  
+            { "id": "ipa5xG1wPl0" },
             { "id": "4bqKS_heRZM" }
         ];
         var currentVideoIndex = 0;
@@ -140,7 +140,7 @@
             }
         });
 
-        document.getElementById('refresh-btn').addEventListener('click', function() {
+        document.getElementById('next-btn').addEventListener('click', function() {
             playNextVideo();
         });
 
