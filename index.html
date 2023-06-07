@@ -43,27 +43,22 @@
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Our array of videos, you can add more.
-        var videos = [
-            { platform: 'youtube', id: 'M7lc1UVf-VE' }, // YouTube API Sample Video
-            { platform: 'vimeo', id: '76979871' }, // Vimeo API Sample Video
-            // Add more videos as necessary.
-        ];
-
         var player;
         var currentPlatform;
         var isMuted = true;
         var lastVideoIndex = null;
+        var videos = [];
 
         function onYouTubeIframeAPIReady() {
-            playRandomVideo(); // Play a video when the API is ready
+            fetch('videos.json')
+                .then(response => response.json())
+                .then(data => {
+                    videos = data;
+                    playRandomVideo(); // Play a video when the API is ready
+                });
         }
 
         function playRandomVideo() {
-            // Remove old player
-            var playerDiv = document.getElementById('player');
-            playerDiv.innerHTML = '';
-
             // Select a video at random, ensure it is not the same as the last one
             var videoIndex;
             do {
@@ -73,6 +68,10 @@
 
             var video = videos[videoIndex];
             currentPlatform = video.platform;
+
+            // Remove old player
+            var playerDiv = document.getElementById('player');
+            playerDiv.innerHTML = '';
 
             // Load the appropriate player and autoplay the video.
             if (currentPlatform === 'youtube') {
