@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NewlifeIO</title>
+    <script src="https://player.vimeo.com/api/player.js"></script>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #player {
+            flex: 0 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="player"></div>
+
+    <script>
+        // YouTube API must be loaded after the Vimeo player due to a bug in the YouTube Iframe API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Our array of videos, you can add more.
+        var videos = [
+            { platform: 'youtube', id: 'M7lc1UVf-VE' }, // YouTube API Sample Video
+            { platform: 'vimeo', id: '76979871' }, // Vimeo API Sample Video
+            // Add more videos as necessary.
+        ];
+
+        function playRandomVideo() {
+            // Remove old player
+            var playerDiv = document.getElementById('player');
+            playerDiv.innerHTML = '';
+
+            // Select a video at random.
+            var video = videos[Math.floor(Math.random() * videos.length)];
+
+            // Load the appropriate player and autoplay the video.
+            if (video.platform === 'youtube') {
+                var player;
+                window.onYouTubeIframeAPIReady = function() {
+                    player = new YT.Player('player', {
+                        height: '390',
+                        width: '640',
+                        videoId: video.id,
+                        playerVars: {
+                            autoplay: 1,
+                            modestbranding: 1,
+                            controls: 0,
+                            disablekb: 1,
+                            rel: 0,
+                            showinfo: 0
+                        },
+                        events: {
+                            'onStateChange': function(event) {
+                                if (event.data === YT.PlayerState.ENDED) {
+                                    playRandomVideo(); // Play another video when current ends
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (video.platform === 'vimeo') {
+                var options = {
+                    id: video.id,
+                    width: 640,
+                    autoplay: true,
+                    byline: false,
+                    title: false,
+                    portrait: false,
+                    background: true
+                };
+
+                var player = new Vimeo.Player('player', options);
+                player.setVolume(0);
+                player.on('ended', function() {
+                    playRandomVideo(); // Play another video when current ends
+                });
+            }
+        }
+
+        playRandomVideo(); // Play the first video on load
+    </script>
+</body>
+</html>
