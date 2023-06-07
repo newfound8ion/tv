@@ -6,18 +6,19 @@
         body {
             background-color: black;
             margin: 0;
+            padding: 0;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            position: relative;
         }
 
         #player-wrapper {
             width: 640px;
             height: 360px;
             position: relative;
+            margin-top: 10px;
         }
 
         #player {
@@ -29,12 +30,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background-color: rgba(0, 0, 0, 0.8);
+            position: relative;
+            margin-top: 10px;
         }
 
         #controls span {
@@ -51,11 +48,11 @@
 <body>
     <div id="player-wrapper">
         <div id="player"></div>
-        <div id="controls">
-            <span id="mute-btn"><img src="https://github.com/newfound8ion/tv/blob/main/mute.png?raw=true" width="20" alt="Mute"></span>
-            <span id="logo"><img src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="50" alt="Newlife TV"></span>
-            <span id="next-btn"><img src="https://github.com/newfound8ion/tv/blob/main/fast-forward.png?raw=true" width="20" alt="Next"></span>
-        </div>
+    </div>
+    <div id="controls">
+        <span id="mute-btn"><img src="https://github.com/newfound8ion/tv/blob/main/mute.png?raw=true" width="20" alt="Mute"></span>
+        <span id="logo"><img src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="50" alt="Newlife TV"></span>
+        <span id="next-btn"><img src="https://github.com/newfound8ion/tv/blob/main/fast-forward.png?raw=true" width="20" alt="Next"></span>
     </div>
 
     <script>
