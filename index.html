@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Newlife TV</title>
+    <title>YouTube Player</title>
     <style>
         body {
             margin: 0;
             padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000000;
         }
         
         #player {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            width: 50vw;
+            height: 50vh;
         }
         
         #logo {
@@ -48,9 +50,9 @@
 </head>
 <body>
     <div id="player"></div>
-    <img id="logo" src="/download.png">
-    <img id="next" src="/fast-forward.png">
-    <img id="audio" src="/speaker-filled-audio-tool.png">
+    <img id="logo" src="download.png">
+    <img id="next" src="fast-forward.png">
+    <img id="audio" src="speaker-filled-audio-tool.png">
 
     <script>
         // Load the YouTube Iframe API asynchronously
@@ -100,8 +102,6 @@
 
         function createPlayer() {
             player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
                 playerVars: {
                     autoplay: 1,
                     controls: 0,
@@ -120,6 +120,10 @@
 
         function onPlayerReady(event) {
             event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+            player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+            window.addEventListener('resize', function() {
+                player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+            });
         }
 
         function onPlayerStateChange(event) {
