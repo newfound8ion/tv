@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NewlifeIO</title>
+    <title>Newlife TV</title>
     <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
         body {
@@ -11,17 +11,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
         #player {
             flex: 0 0 auto;
+        }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+        }
+        .control-btn {
+            cursor: pointer;
+            margin: 0 10px;
         }
     </style>
 </head>
 <body>
     <div id="player"></div>
+    <div id="controls">
+        <span id="mute-btn" class="control-btn">Mute</span>
+        <span id="refresh-btn" class="control-btn">&#x21bb; Next</span>
+    </div>
 
     <script>
-        // YouTube API must be loaded after the Vimeo player due to a bug in the YouTube Iframe API
+        // Load the YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -34,6 +50,13 @@
             // Add more videos as necessary.
         ];
 
+        var player;
+        var isMuted = true;
+
+        function onYouTubeIframeAPIReady() {
+            playRandomVideo(); // Play a video when the API is ready
+        }
+
         function playRandomVideo() {
             // Remove old player
             var playerDiv = document.getElementById('player');
@@ -44,29 +67,25 @@
 
             // Load the appropriate player and autoplay the video.
             if (video.platform === 'youtube') {
-                var player;
-                window.onYouTubeIframeAPIReady = function() {
-                    player = new YT.Player('player', {
-                        height: '390',
-                        width: '640',
-                        videoId: video.id,
-                        playerVars: {
-                            autoplay: 1,
-                            modestbranding: 1,
-                            controls: 0,
-                            disablekb: 1,
-                            rel: 0,
-                            showinfo: 0
-                        },
-                        events: {
-                            'onStateChange': function(event) {
-                                if (event.data === YT.PlayerState.ENDED) {
-                                    playRandomVideo(); // Play another video when current ends
-                                }
+                player = new YT.Player('player', {
+                    height: '390',
+                    width: '640',
+                    videoId: video.id,
+                    playerVars: {
+                        autoplay: 1,
+                        controls: 0,
+                        modestbranding: 1,
+                        rel: 0,
+                        mute: isMuted ? 1 : 0
+                    },
+                    events: {
+                        'onStateChange': function(event) {
+                            if (event.data === YT.PlayerState.ENDED) {
+                                playRandomVideo(); // Play another video when current ends
                             }
                         }
-                    });
-                }
+                    }
+                });
             } else if (video.platform === 'vimeo') {
                 var options = {
                     id: video.id,
@@ -75,18 +94,30 @@
                     byline: false,
                     title: false,
                     portrait: false,
-                    background: true
+                    muted: isMuted
                 };
 
-                var player = new Vimeo.Player('player', options);
-                player.setVolume(0);
+                player = new Vimeo.Player('player', options);
                 player.on('ended', function() {
                     playRandomVideo(); // Play another video when current ends
                 });
             }
         }
 
-        playRandomVideo(); // Play the first video on load
+        document.getElementById('mute-btn').addEventListener('click', function() {
+            isMuted = !isMuted;
+            if (isMuted) {
+                player.mute();
+                this.textContent = 'Mute';
+            } else {
+                player.unMute();
+                this.textContent = 'Unmute';
+            }
+        });
+
+        document.getElementById('refresh-btn').addEventListener('click', function() {
+            playRandomVideo();
+        });
     </script>
 </body>
 </html>
