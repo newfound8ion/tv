@@ -32,7 +32,7 @@
 <body>
     <div id="player"></div>
     <div id="controls">
-        <span id="mute-btn" class="control-btn">Mute</span>
+        <span id="mute-btn" class="control-btn">Unmute</span>
         <span id="refresh-btn" class="control-btn">&#x21bb; Next</span>
     </div>
 
@@ -51,6 +51,7 @@
         ];
 
         var player;
+        var currentPlatform;
         var isMuted = true;
 
         function onYouTubeIframeAPIReady() {
@@ -64,9 +65,10 @@
 
             // Select a video at random.
             var video = videos[Math.floor(Math.random() * videos.length)];
+            currentPlatform = video.platform;
 
             // Load the appropriate player and autoplay the video.
-            if (video.platform === 'youtube') {
+            if (currentPlatform === 'youtube') {
                 player = new YT.Player('player', {
                     height: '390',
                     width: '640',
@@ -86,7 +88,7 @@
                         }
                     }
                 });
-            } else if (video.platform === 'vimeo') {
+            } else if (currentPlatform === 'vimeo') {
                 var options = {
                     id: video.id,
                     width: 640,
@@ -107,11 +109,19 @@
         document.getElementById('mute-btn').addEventListener('click', function() {
             isMuted = !isMuted;
             if (isMuted) {
-                player.mute();
-                this.textContent = 'Mute';
-            } else {
-                player.unMute();
                 this.textContent = 'Unmute';
+                if(currentPlatform === 'youtube'){
+                    player.mute();
+                } else if (currentPlatform === 'vimeo'){
+                    player.setVolume(0);
+                }
+            } else {
+                this.textContent = 'Mute';
+                if(currentPlatform === 'youtube'){
+                    player.unMute();
+                } else if (currentPlatform === 'vimeo'){
+                    player.setVolume(1);
+                }
             }
         });
 
