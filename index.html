@@ -107,25 +107,57 @@
             playRandomVideo();
         });
 
-       function createPlayer() {
-    player = new YT.Player('player', {
-        height: '390',
-        width: '640',
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0,
-            mute: isMuted ? 1 : 0,
-            cc_load_policy: 1, // Turn on captions
-            hl: 'zh-CN' // Preferred language for auto-generated captions
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
+      function createPlayer(videoId) {
+  // Remove old player if it exists
+  if (player) {
+    player.destroy();
+  }
+
+  // Create a new player
+  player = new YT.Player('player', {
+    height: '390',
+    width: '640',
+    videoId: videoId,
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      modestbranding: 1,
+      rel: 0,
+      mute: isMuted ? 1 : 0
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange,
+      'onError': onPlayerError
+    }
+  });
 }
+
+function onPlayerReady(event) {
+  event.target.playVideo();
+}
+
+function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    playNextVideo();
+  }
+}
+
+function onPlayerError(event) {
+  // Handle any errors that occur during video playback
+  console.log('An error occurred while playing the video: ' + event.data);
+  playNextVideo();
+}
+
+function playNextVideo() {
+  currentVideoIndex++;
+  if (currentVideoIndex >= videos.length) {
+    currentVideoIndex = 0; // Start from the first video if we reach the end
+  }
+  var nextVideoId = videos[currentVideoIndex].id;
+  createPlayer(nextVideoId);
+}
+
 
 
         // After the YouTube API loads, create the player
