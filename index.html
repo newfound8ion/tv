@@ -15,39 +15,48 @@
             position: relative;
         }
 
-        #logo {
-            margin-bottom: 50px;
-            cursor: pointer;
+        #player-wrapper {
+            width: 640px;
+            height: 360px;
+            position: relative;
         }
 
         #player {
             width: 100%;
-            height: calc(100vh - 150px);
+            height: 100%;
         }
 
         #controls {
             display: flex;
             align-items: center;
             justify-content: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
-        .control-btn {
-            cursor: pointer;
+        #controls span {
             margin: 0 10px;
             color: #fff;
-            opacity: 1;
+            cursor: pointer;
         }
 
-        .control-btn.muted {
-            opacity: 0.5;
+        #logo {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="player"></div>
-    <div id="controls">
-        <span id="mute-btn" class="control-btn">Mute</span>
-        <span id="next-btn" class="control-btn"><i class="fal fa-fast-forward"></i></span>
+    <div id="player-wrapper">
+        <div id="player"></div>
+        <div id="controls">
+            <span id="mute-btn"><i class="fal fa-volume-mute"></i></span>
+            <span id="logo">Newlife TV</span>
+            <span id="next-btn"><i class="fal fa-fast-forward"></i></span>
+        </div>
     </div>
 
     <script>
@@ -112,27 +121,23 @@
 
         function toggleMute() {
             isMuted = !isMuted;
-            if (isMuted) {
-                player.mute();
-            } else {
-                player.unMute();
-            }
+            player.setVolume(isMuted ? 0 : 100);
             setMuteButtonState();
         }
 
         function setMuteButtonState() {
             var muteButton = document.getElementById('mute-btn');
             if (isMuted) {
-                muteButton.textContent = 'Unmute';
+                muteButton.innerHTML = '<i class="fal fa-volume-mute"></i>';
                 muteButton.classList.add('muted');
             } else {
-                muteButton.textContent = 'Mute';
+                muteButton.innerHTML = '<i class="fal fa-volume-up"></i>';
                 muteButton.classList.remove('muted');
             }
         }
 
         document.getElementById('mute-btn').addEventListener('click', toggleMute);
-        document.getElementById('next-btn').addEventListener('click', playNextVideo);
+        document.getElementById('logo').addEventListener('click', playNextVideo);
 
         // After the YouTube API loads, create the player
         window.onYouTubeIframeAPIReady = createPlayer;
