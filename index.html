@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Newlife TV</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-xyz" crossorigin="anonymous" />
     <style>
         body {
             background-color: black;
@@ -53,9 +52,9 @@
     <div id="player-wrapper">
         <div id="player"></div>
         <div id="controls">
-            <span id="mute-btn"><i class="fas fa-volume-mute"></i></span>
-            <span id="logo"><img src="download.png" width="50" alt="Newlife TV"></span>
-            <span id="next-btn"><img src="fast-forward.png" width="20" alt="Next"></span>
+            <span id="mute-btn"><img src="https://github.com/newfound8ion/tv/blob/main/mute.png?raw=true" width="20" alt="Mute"></span>
+            <span id="logo"><img src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="50" alt="Newlife TV"></span>
+            <span id="next-btn"><img src="https://github.com/newfound8ion/tv/blob/main/fast-forward.png?raw=true" width="20" alt="Next"></span>
         </div>
     </div>
 
@@ -127,13 +126,7 @@
 
         function setMuteButtonState() {
             var muteButton = document.getElementById('mute-btn');
-            if (isMuted) {
-                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                muteButton.style.opacity = '1';
-            } else {
-                muteButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-                muteButton.style.opacity = '0.5';
-            }
+            muteButton.style.opacity = isMuted ? '1' : '0.5';
         }
 
         document.getElementById('mute-btn').addEventListener('click', toggleMute);
