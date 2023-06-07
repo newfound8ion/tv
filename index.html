@@ -111,7 +111,7 @@
         var videoIds = [];
         var shuffledVideoIds = [];
         var currentIndex = 0;
-        var isMuted = false;
+        var isMuted = true;
 
         function onYouTubeIframeAPIReady() {
             fetchVideoIds(function(response) {
@@ -130,7 +130,8 @@
                     rel: 0,
                     modestbranding: 1,
                     showinfo: 0,
-                    playsinline: 1
+                    playsinline: 1,
+                    mute: 1 // Start muted by default
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -142,6 +143,7 @@
         function onPlayerReady(event) {
             event.target.playVideo();
             event.target.setVolume(100);
+            event.target.unMute(); // Unmute once the video starts playing
             event.target.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
             window.addEventListener('resize', function() {
                 player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
