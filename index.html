@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Newlife TV</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-xyz" crossorigin="anonymous" />
     <style>
         body {
             background-color: black;
@@ -15,72 +16,60 @@
         }
 
         #logo {
-            margin-bottom: 20px;
+            margin-bottom: 50px;
             cursor: pointer;
-            width: 200px;
         }
 
         #player {
             width: 100%;
-            height: calc(100% - 60px);
-            position: absolute;
-            top: 0;
-            left: 0;
+            height: calc(100vh - 150px);
         }
 
         #controls {
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-top: 20px;
+            justify-content: center;
         }
 
         .control-btn {
             cursor: pointer;
             margin: 0 10px;
-            background-color: black;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: #fff;
+            opacity: 1;
         }
 
-        .control-btn svg {
-            fill: white;
-            width: 24px;
-            height: 24px;
+        .control-btn.muted {
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <button id="mute-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg></button>
-        <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" alt="Newlife TV">
-        <button id="next-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg></button>
-    </div>
     <div id="player"></div>
+    <div id="controls">
+        <span id="mute-btn" class="control-btn">Mute</span>
+        <span id="next-btn" class="control-btn"><i class="fal fa-fast-forward"></i></span>
+    </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Load the YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
         var player;
-        var videos = [
-            { "id": "dRYY9HjtZqs" },
-            { "id": "UrEUzKTt7j0" },
-            { "id": "YqaxQmjsb2A" },
-            { "id": "F9YLIQPWCzM" },
-            { "id": "RhZ058-lI6g" },
-            { "id": "7MZ7X6cBPnM" },
-            { "id": "W3pTt44rybA" },
-            { "id": "X9RYuvPCQUA" },
-            { "id": "X9RYuvPCQUA" },
-            { "id": "ipa5xG1wPl0" },
-            { "id": "4bqKS_heRZM" }
-        ];
         var currentVideoIndex = 0;
-        var isMuted = false;
+        var videos = [];
+        var isMuted = true;
+
+        function onYouTubeIframeAPIReady() {
+            fetch('videos.json')
+                .then(response => response.json())
+                .then(data => {
+                    videos = data;
+                    createPlayer();
+                });
+        }
 
         function createPlayer() {
             player = new YT.Player('player', {
@@ -92,20 +81,18 @@
                     controls: 0,
                     modestbranding: 1,
                     rel: 0,
-                    mute: isMuted ? 1 : 0,
-                    cc_load_policy: 1,
-                    cc_lang_pref: 'zh-CN'
+                    mute: isMuted ? 1 : 0
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
         function onPlayerReady(event) {
             event.target.playVideo();
+            setMuteButtonState();
         }
 
         function onPlayerStateChange(event) {
@@ -114,44 +101,38 @@
             }
         }
 
-        function onPlayerError(event) {
-            console.log('An error occurred while playing the video: ' + event.data);
-            playNextVideo();
-        }
-
         function playNextVideo() {
             currentVideoIndex++;
             if (currentVideoIndex >= videos.length) {
                 currentVideoIndex = 0; // Start from the first video if we reach the end
             }
-            var nextVideoId = videos[currentVideoIndex].id;
-            player.loadVideoById(nextVideoId);
+            player.loadVideoById(videos[currentVideoIndex].id);
+            setMuteButtonState();
         }
 
-        document.getElementById('logo').addEventListener('click', function() {
-            playNextVideo();
-        });
-
-        document.getElementById('mute-btn').addEventListener('click', function() {
+        function toggleMute() {
             isMuted = !isMuted;
             if (isMuted) {
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg>';
                 player.mute();
             } else {
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg>';
                 player.unMute();
             }
-        });
+            setMuteButtonState();
+        }
 
-        document.getElementById('next-btn').addEventListener('click', function() {
-            playNextVideo();
-        });
+        function setMuteButtonState() {
+            var muteButton = document.getElementById('mute-btn');
+            if (isMuted) {
+                muteButton.textContent = 'Unmute';
+                muteButton.classList.add('muted');
+            } else {
+                muteButton.textContent = 'Mute';
+                muteButton.classList.remove('muted');
+            }
+        }
 
-        // Load the YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        document.getElementById('mute-btn').addEventListener('click', toggleMute);
+        document.getElementById('next-btn').addEventListener('click', playNextVideo);
 
         // After the YouTube API loads, create the player
         window.onYouTubeIframeAPIReady = createPlayer;
