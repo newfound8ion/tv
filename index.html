@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Newlife TV</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             background-color: black;
@@ -22,114 +21,114 @@
 
         #controls {
             display: flex;
-            align-items: center;
             justify-content: center;
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            margin: auto;
-            color: #fff;
+            align-items: center;
+            margin-top: 20px;
         }
 
         .control-btn {
             cursor: pointer;
             margin: 0 10px;
-            font-size: 24px;
         }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <button id="mute-btn" class="control-btn"><i class="fas fa-volume-up"></i></button>
-        <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="300" alt="Newlife TV">
-        <button id="refresh-btn" class="control-btn"><i class="fas fa-redo"></i></button>
-    </div>
+    <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="300" alt="Newlife TV">
     <div id="player"></div>
+    <div id="controls">
+        <button id="mute-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg></button>
+        <button id="refresh-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" /></svg></button>
+    </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         var player;
-        var lastVideoIndex = null;
-        var videos = [];
+        var videos = [
+            { "id": "dRYY9HjtZqs" },
+            { "id": "UrEUzKTt7j0" },
+            { "id": "YqaxQmjsb2A" },
+            { "id": "F9YLIQPWCzM" },
+            { "id": "RhZ058-lI6g" },
+            { "id": "7MZ7X6cBPnM" },
+            { "id": "W3pTt44rybA" },
+            { "id": "X9RYuvPCQUA" },
+            { "id": "X9RYuvPCQUA" },
+            { "id": "ipa5xG1wPl0" },  
+            { "id": "4bqKS_heRZM" }
+        ];
+        var currentVideoIndex = 0;
         var isMuted = false;
-        var playerReady = false;
 
-        function onYouTubeIframeAPIReady() {
-            fetch('videos.json')
-                .then(response => response.json())
-                .then(data => {
-                    videos = data;
-                    playRandomVideo(); // Play a video when the API is ready
-                });
-        }
-
-        function playRandomVideo() {
-            if (playerReady) {
-                // Select a video at random, ensure it is not the same as the last one
-                var videoIndex;
-                do {
-                    videoIndex = Math.floor(Math.random() * videos.length);
-                } while (videos.length > 1 && videoIndex === lastVideoIndex);
-                lastVideoIndex = videoIndex;
-
-                // Update the video for the player
-                player.loadVideoById(videos[videoIndex].id);
-            }
-        }
-
-        function onPlayerReady(event) {
-            playerReady = true;
-            playRandomVideo();
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                playRandomVideo(); // Play another video when the current one ends
-            }
-        }
-
-        document.getElementById('logo').addEventListener('click', function() {
-            playRandomVideo();
-        });
-
-        document.getElementById('mute-btn').addEventListener('click', function() {
-            isMuted = !isMuted;
-            if (isMuted) {
-                this.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                player.mute();
-            } else {
-                this.innerHTML = '<i class="fas fa-volume-up"></i>';
-                player.unMute();
-            }
-        });
-
-        document.getElementById('refresh-btn').addEventListener('click', function() {
-            playRandomVideo();
-        });
-
-        function createPlayer(videoId) {
-            if (player) {
-                player.destroy();
-            }
-
+        function createPlayer() {
             player = new YT.Player('player', {
                 height: '390',
                 width: '640',
-                videoId: videoId,
+                videoId: videos[currentVideoIndex].id,
                 playerVars: {
                     autoplay: 1,
                     controls: 0,
                     modestbranding: 1,
                     rel: 0,
-                    mute: isMuted ? 1 : 0
+                    mute: isMuted ? 1 : 0,
+                    cc_load_policy: 1,
+                    cc_lang_pref: 'zh-CN'
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
                 }
             });
         }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextVideo();
+            }
+        }
+
+        function onPlayerError(event) {
+            console.log('An error occurred while playing the video: ' + event.data);
+            playNextVideo();
+        }
+
+        function playNextVideo() {
+            currentVideoIndex++;
+            if (currentVideoIndex >= videos.length) {
+                currentVideoIndex = 0; // Start from the first video if we reach the end
+            }
+            var nextVideoId = videos[currentVideoIndex].id;
+            player.loadVideoById(nextVideoId);
+        }
+
+        document.getElementById('logo').addEventListener('click', function() {
+            playNextVideo();
+        });
+
+        document.getElementById('mute-btn').addEventListener('click', function() {
+            isMuted = !isMuted;
+            if (isMuted) {
+                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg>';
+                player.mute();
+            } else {
+                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg>';
+                player.unMute();
+            }
+        });
+
+        document.getElementById('refresh-btn').addEventListener('click', function() {
+            playNextVideo();
+        });
+
+        // Load the YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         // After the YouTube API loads, create the player
         window.onYouTubeIframeAPIReady = createPlayer;
