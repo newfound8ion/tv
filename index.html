@@ -6,7 +6,6 @@
         body {
             background-color: black;
             margin: 0;
-            padding: 10px;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -18,11 +17,15 @@
         #logo {
             margin-bottom: 20px;
             cursor: pointer;
-            width: 150px;
+            width: 200px;
         }
 
         #player {
-            margin-top: 10px;
+            width: 100%;
+            height: calc(100% - 60px);
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #controls {
@@ -81,8 +84,8 @@
 
         function createPlayer() {
             player = new YT.Player('player', {
-                height: '390',
-                width: '640',
+                height: '100%',
+                width: '100%',
                 videoId: videos[currentVideoIndex].id,
                 playerVars: {
                     autoplay: 1,
