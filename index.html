@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Newlife TV</title>
-    <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
         body {
             background-color: black;
@@ -27,10 +26,18 @@
             cursor: pointer;
             margin: 0 10px;
         }
+        #header {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="player"></div>
+    <img id="header" src="https://github.com/newfound8ion/tv/blob/main/download.png" onclick="playRandomVideo()">
     <div id="controls">
         <span id="mute-btn" class="control-btn">Unmute</span>
         <span id="refresh-btn" class="control-btn">&#x21bb; Next</span>
@@ -44,18 +51,15 @@
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         var player;
-        var currentPlatform;
         var isMuted = true;
         var lastVideoIndex = null;
         var videos = [];
 
         window.onYouTubeIframeAPIReady = function() {
-            console.log('YouTube API ready');
             fetch('videos.json')
                 .then(response => response.json())
                 .then(data => {
                     videos = data;
-                    console.log('Video data fetched', videos);
                     playRandomVideo(); // Play a video when the API is ready
                 });
         }
@@ -69,68 +73,41 @@
             lastVideoIndex = videoIndex;
 
             var video = videos[videoIndex];
-            console.log('Playing video', video);
-            currentPlatform = video.platform;
 
             // Remove old player
             var playerDiv = document.getElementById('player');
             playerDiv.innerHTML = '';
 
-            // Load the appropriate player and autoplay the video.
-            if (currentPlatform === 'youtube') {
-                player = new YT.Player('player', {
-                    height: '390',
-                    width: '640',
-                    videoId: video.id,
-                    playerVars: {
-                        autoplay: 1,
-                        controls: 0,
-                        modestbranding: 1,
-                        rel: 0,
-                        mute: isMuted ? 1 : 0
-                    },
-                    events: {
-                        'onStateChange': function(event) {
-                            if (event.data === YT.PlayerState.ENDED) {
-                                playRandomVideo(); // Play another video when current ends
-                            }
+            // Load the YouTube player and autoplay the video.
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: video.id,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    mute: isMuted ? 1 : 0
+                },
+                events: {
+                    'onStateChange': function(event) {
+                        if (event.data === YT.PlayerState.ENDED) {
+                            playRandomVideo(); // Play another video when current ends
                         }
                     }
-                });
-            } else if (currentPlatform === 'vimeo') {
-                var options = {
-                    id: video.id,
-                    width: 640,
-                    autoplay: true,
-                    byline: false,
-                    title: false,
-                    portrait: false,
-                    muted: isMuted
-                };
-
-                player = new Vimeo.Player('player', options);
-                player.on('ended', function() {
-                    playRandomVideo(); // Play another video when current ends
-                });
-            }
+                }
+            });
         }
 
         document.getElementById('mute-btn').addEventListener('click', function() {
             isMuted = !isMuted;
             if (isMuted) {
                 this.textContent = 'Unmute';
-                if(currentPlatform === 'youtube'){
-                    player.mute();
-                } else if (currentPlatform === 'vimeo'){
-                    player.setVolume(0);
-                }
+                player.mute();
             } else {
                 this.textContent = 'Mute';
-                if(currentPlatform === 'youtube'){
-                    player.unMute();
-                } else if (currentPlatform === 'vimeo'){
-                    player.setVolume(1);
-                }
+                player.unMute();
             }
         });
 
