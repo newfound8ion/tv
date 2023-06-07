@@ -6,6 +6,7 @@
         body {
             background-color: black;
             margin: 0;
+            padding: 10px;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -15,8 +16,13 @@
         }
 
         #logo {
-            margin-bottom: 50px;
+            margin-bottom: 20px;
             cursor: pointer;
+            width: 150px;
+        }
+
+        #player {
+            margin-top: 10px;
         }
 
         #controls {
@@ -29,15 +35,29 @@
         .control-btn {
             cursor: pointer;
             margin: 0 10px;
+            background-color: black;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-btn svg {
+            fill: white;
+            width: 24px;
+            height: 24px;
         }
     </style>
 </head>
 <body>
-    <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="300" alt="Newlife TV">
+    <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" alt="Newlife TV">
     <div id="player"></div>
     <div id="controls">
-        <button id="mute-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg></button>
-        <button id="refresh-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" /></svg></button>
+        <button id="mute-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg></button>
+        <button id="refresh-btn" class="control-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" /></svg></button>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -112,10 +132,10 @@
         document.getElementById('mute-btn').addEventListener('click', function() {
             isMuted = !isMuted;
             if (isMuted) {
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg>';
+                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7 9v6h4l5 5V4l-5 5H7z" /></svg>';
                 player.mute();
             } else {
-                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24" height="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg>';
+                this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 15v-2h2v2h5v-5l-2-2v3h-2V8h4V6h-6v6l-2-2zM7 21h10V11H7v10zm2-8h6v6H9v-6z" /></svg>';
                 player.unMute();
             }
         });
