@@ -53,6 +53,7 @@
         var player;
         var currentPlatform;
         var isMuted = true;
+        var lastVideoIndex = null;
 
         function onYouTubeIframeAPIReady() {
             playRandomVideo(); // Play a video when the API is ready
@@ -63,8 +64,14 @@
             var playerDiv = document.getElementById('player');
             playerDiv.innerHTML = '';
 
-            // Select a video at random.
-            var video = videos[Math.floor(Math.random() * videos.length)];
+            // Select a video at random, ensure it is not the same as the last one
+            var videoIndex;
+            do {
+                videoIndex = Math.floor(Math.random() * videos.length);
+            } while (videos.length > 1 && videoIndex === lastVideoIndex);
+            lastVideoIndex = videoIndex;
+
+            var video = videos[videoIndex];
             currentPlatform = video.platform;
 
             // Load the appropriate player and autoplay the video.
