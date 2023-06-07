@@ -13,13 +13,31 @@
             background-color: #000000;
         }
         
-        #player {
+        #player-container {
+            position: relative;
             width: 50vw;
             height: 50vh;
         }
         
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #FFFFFF;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.2s linear;
+        }
+        
         #logo {
-            position: fixed;
+            position: absolute;
             bottom: 10px;
             left: 10px;
             width: 50px;
@@ -27,7 +45,7 @@
         }
         
         #next {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
             right: 70px;
             width: 30px;
@@ -35,7 +53,7 @@
         }
         
         #audio {
-            position: fixed;
+            position: absolute;
             bottom: 20px;
             right: 20px;
             width: 30px;
@@ -49,7 +67,10 @@
     </style>
 </head>
 <body>
-    <div id="player"></div>
+    <div id="player-container">
+        <div id="player"></div>
+        <div id="progress-bar"></div>
+    </div>
     <img id="logo" src="download.png">
     <img id="next" src="fast-forward.png">
     <img id="audio" src="speaker-filled-audio-tool.png">
@@ -119,11 +140,13 @@
         }
 
         function onPlayerReady(event) {
-            event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
-            player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+            event.target.playVideo();
+            event.target.setVolume(100);
+            event.target.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
             window.addEventListener('resize', function() {
                 player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
             });
+            setInterval(updateProgressBar, 200);
         }
 
         function onPlayerStateChange(event) {
@@ -159,6 +182,12 @@
             } else {
                 audioButton.classList.remove('muted');
             }
+        }
+
+        function updateProgressBar() {
+            var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+            var progressBar = document.getElementById('progress-bar');
+            progressBar.style.transform = `scaleX(${playerProgress / 100})`;
         }
 
         document.getElementById('next').addEventListener('click', playNextVideo);
