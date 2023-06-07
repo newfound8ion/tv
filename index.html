@@ -4,111 +4,161 @@
     <title>Newlife TV</title>
     <style>
         body {
-            background-color: black;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
         }
-
-        #player-wrapper {
-            width: 640px;
-            height: 360px;
-            position: relative;
-            margin-top: 10px;
-        }
-
+        
         #player {
-            width: 100%;
-            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
-
-        #controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-top: 10px;
-        }
-
-        #controls span {
-            margin: 0 10px;
-            color: #fff;
-            cursor: pointer;
-        }
-
+        
         #logo {
-            cursor: pointer;
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 50px;
+            height: 50px;
+        }
+        
+        #next {
+            position: fixed;
+            bottom: 20px;
+            right: 70px;
+            width: 30px;
+            height: 30px;
+        }
+        
+        #audio {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            opacity: 1;
+        }
+        
+        #audio.muted {
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
-    <div id="player-wrapper">
-        <div id="player"></div>
-    </div>
-    <div id="controls">
-        <span id="mute-btn"><img src="speaker-filled-audio-tool.png" width="20" alt="Mute"></span>
-        <span id="logo"><img src="download.png" width="50" alt="Newlife TV"></span>
-        <span id="next-btn"><img src="fast-forward.png" width="20" alt="Next"></span>
-    </div>
+    <div id="player"></div>
+    <img id="logo" src="/download.png">
+    <img id="next" src="/fast-forward.png">
+    <img id="audio" src="/speaker-filled-audio-tool.png">
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Load the YouTube Iframe API asynchronously
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Fetch the video IDs from the JSON file
+        function fetchVideoIds(callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    callback(response);
+                }
+            };
+            xhr.open("GET", "videos.json", true);
+            xhr.send();
+        }
+
+        // Shuffle the video IDs array
+        function shuffleArray(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+
+        // Create YouTube player
         var player;
-        var videos = [];
+        var videoIds = [];
+        var shuffledVideoIds = [];
+        var currentIndex = 0;
+        var isMuted = false;
 
         function onYouTubeIframeAPIReady() {
-            fetch('videos.json')
-                .then(response => response.json())
-                .then(data => {
-                    videos = data;
-                    createPlayer();
-                });
+            fetchVideoIds(function(response) {
+                videoIds = response;
+                shuffledVideoIds = shuffleArray(videoIds);
+                createPlayer();
+            });
         }
 
         function createPlayer() {
-            var randomIndex = Math.floor(Math.random() * videos.length);
-            var randomVideoId = videos[randomIndex].id;
-
             player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
-                videoId: randomVideoId,
                 playerVars: {
                     autoplay: 1,
                     controls: 0,
-                    modestbranding: 1,
+                    disablekb: 1,
                     rel: 0,
-                    mute: 1,
+                    modestbranding: 1,
                     showinfo: 0,
-                    iv_load_policy: 3,
-                    fs: 0
+                    playsinline: 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
-        function toggleMute() {
-            var isMuted = player.isMuted();
-            player.setVolume(isMuted ? 100 : 0);
+        function onPlayerReady(event) {
+            event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextVideo();
+            }
         }
 
         function playNextVideo() {
-            player.stopVideo();
-            player.clearVideo();
-
-            var randomIndex = Math.floor(Math.random() * videos.length);
-            var randomVideoId = videos[randomIndex].id;
-            player.loadVideoById(randomVideoId);
+            currentIndex++;
+            if (currentIndex >= shuffledVideoIds.length) {
+                currentIndex = 0;
+                shuffledVideoIds = shuffleArray(videoIds);
+            }
+            player.loadVideoById(shuffledVideoIds[currentIndex].id);
+            updateAudioButton();
         }
 
-        document.getElementById('mute-btn').addEventListener('click', toggleMute);
-        document.getElementById('logo').addEventListener('click', playNextVideo);
+        function toggleMute() {
+            if (isMuted) {
+                player.unMute();
+            } else {
+                player.mute();
+            }
+            isMuted = !isMuted;
+            updateAudioButton();
+        }
 
-        // After the YouTube API loads, create the player
-        window.onYouTubeIframeAPIReady = createPlayer;
+        function updateAudioButton() {
+            var audioButton = document.getElementById('audio');
+            if (isMuted) {
+                audioButton.classList.add('muted');
+            } else {
+                audioButton.classList.remove('muted');
+            }
+        }
+
+        document.getElementById('next').addEventListener('click', playNextVideo);
+        document.getElementById('audio').addEventListener('click', toggleMute);
     </script>
 </body>
 </html>
