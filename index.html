@@ -53,9 +53,9 @@
     <div id="player-wrapper">
         <div id="player"></div>
         <div id="controls">
-            <span id="mute-btn"><i class="fal fa-volume-mute"></i></span>
+            <span id="mute-btn"><i class="fas fa-volume-mute"></i></span>
             <span id="logo">Newlife TV</span>
-            <span id="next-btn"><i class="fal fa-fast-forward"></i></span>
+            <span id="next-btn"><i class="fas fa-forward"></i></span>
         </div>
     </div>
 
@@ -128,11 +128,9 @@
         function setMuteButtonState() {
             var muteButton = document.getElementById('mute-btn');
             if (isMuted) {
-                muteButton.innerHTML = '<i class="fal fa-volume-mute"></i>';
-                muteButton.classList.add('muted');
+                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
             } else {
-                muteButton.innerHTML = '<i class="fal fa-volume-up"></i>';
-                muteButton.classList.remove('muted');
+                muteButton.innerHTML = '<i class="fas fa-volume-up"></i>';
             }
         }
 
