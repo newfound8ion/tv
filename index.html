@@ -8,49 +8,54 @@
             margin: 0;
             height: 100vh;
             display: flex;
+            align-items: center;
+            justify-content: center;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            position: relative;
         }
-        #player {
-            width: 100%;
-            height: 80vh;
+
+        #logo {
+            margin-bottom: 50px;
+            cursor: pointer;
         }
-        #controls, #header {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
         }
+
         .control-btn {
             cursor: pointer;
             margin: 0 10px;
-            color: #fff;
-        }
-        #header img {
-            max-width: 200px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="header">
-        <img src="https://raw.githubusercontent.com/newfound8ion/tv/main/download.png" alt="logo" id="logo-btn">
-    </div>
+    <img id="logo" src="https://github.com/newfound8ion/tv/blob/main/download.png?raw=true" width="300" alt="Newlife TV">
     <div id="player"></div>
     <div id="controls">
-        <span id="mute-btn" class="control-btn">Unmute</span>
+        <span id="mute-btn" class="control-btn">Mute</span>
+        <span id="refresh-btn" class="control-btn">Next</span>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // Load the YouTube API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
         var player;
-        var isMuted = true;
         var lastVideoIndex = null;
         var videos = [];
+        var isMuted = false;
+        var playerReady = false;
 
         function onYouTubeIframeAPIReady() {
-            fetch('/tv/videos.json')
+            fetch('videos.json')
                 .then(response => response.json())
                 .then(data => {
                     videos = data;
@@ -59,40 +64,33 @@
         }
 
         function playRandomVideo() {
-            // Select a video at random, ensure it is not the same as the last one
-            var videoIndex;
-            do {
-                videoIndex = Math.floor(Math.random() * videos.length);
-            } while (videos.length > 1 && videoIndex === lastVideoIndex);
-            lastVideoIndex = videoIndex;
+            if (playerReady) {
+                // Select a video at random, ensure it is not the same as the last one
+                var videoIndex;
+                do {
+                    videoIndex = Math.floor(Math.random() * videos.length);
+                } while (videos.length > 1 && videoIndex === lastVideoIndex);
+                lastVideoIndex = videoIndex;
 
-            var video = videos[videoIndex];
-
-            // Remove old player
-            var playerDiv = document.getElementById('player');
-            playerDiv.innerHTML = '';
-
-            // Load the player and autoplay the video.
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: video.id,
-                playerVars: {
-                    autoplay: 1,
-                    controls: 0,
-                    modestbranding: 1,
-                    rel: 0,
-                    mute: isMuted ? 1 : 0
-                },
-                events: {
-                    'onStateChange': function(event) {
-                        if (event.data === YT.PlayerState.ENDED) {
-                            playRandomVideo(); // Play another video when current ends
-                        }
-                    }
-                }
-            });
+                // Update the video for the player
+                player.loadVideoById(videos[videoIndex].id);
+            }
         }
+
+        function onPlayerReady(event) {
+            playerReady = true;
+            playRandomVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playRandomVideo(); // Play another video when current ends
+            }
+        }
+
+        document.getElementById('logo').addEventListener('click', function() {
+            playRandomVideo();
+        });
 
         document.getElementById('mute-btn').addEventListener('click', function() {
             isMuted = !isMuted;
@@ -105,9 +103,30 @@
             }
         });
 
-        document.getElementById('logo-btn').addEventListener('click', function() {
+        document.getElementById('refresh-btn').addEventListener('click', function() {
             playRandomVideo();
         });
+
+        function createPlayer() {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    mute: isMuted ? 1 : 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // After the YouTube API loads, create the player
+        window.onYouTubeIframeAPIReady = createPlayer;
     </script>
 </body>
 </html>
