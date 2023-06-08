@@ -90,12 +90,9 @@ function toggleMute() {
   document.getElementById('audio').classList.toggle('active');
 }
 
-function updateProgressBar() {
-  const playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-  const progressBar = document.getElementById('progress-bar');
-  progressBar.style.width = playerProgress + '%';
-}
+// Add this code snippet at the end of the script
 
-document.getElementById('logo').addEventListener('click', playNextVideo);
-document.getElementById('next').addEventListener('click', playNextVideo);
-document.getElementById('audio').addEventListener('click', toggleMute);
+// Check if the video is initially muted and adjust the audio icon's opacity accordingly
+if (player.isMuted()) {
+  document.getElementById('audio').style.opacity = '0.5';
+}
