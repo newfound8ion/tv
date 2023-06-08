@@ -1,0 +1,33 @@
+body {
+    background: black;
+}
+
+.player {
+    width: 75%;
+    position: relative;
+    margin: auto;
+    padding-bottom: 10px;
+}
+
+.controls img {
+    width: 32px;
+    margin: 8px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.controls #unmute:not(.muted) {
+    opacity: 1;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    margin-top: 8px;
+}
+
+.progress-bar #progress {
+    height: 100%;
+    background: white;
+    width: 0%;
+}
