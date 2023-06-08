@@ -1,36 +1,34 @@
+// Load the YouTube Iframe API asynchronously
+let tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+let firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
 // Fetch the video IDs from the JSON file
-function fetchVideoIds(callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            callback(response);
-        }
-    };
-    xhr.open("GET", "videos.json", true);
-    xhr.send();
+async function fetchVideoIds() {
+    let response = await fetch('videos.json');
+    let data = await response.json();
+    return data;
 }
 
 // Shuffle the video IDs array
 function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
 }
 
 // Create YouTube player
-var player;
-var videoIds = [];
-var shuffledVideoIds = [];
-var currentIndex = 0;
-var isMuted = false;
+let player;
+let videoIds = [];
+let shuffledVideoIds = [];
+let currentIndex = 0;
+let isMuted = true;
 
 function onYouTubeIframeAPIReady() {
-    fetchVideoIds(function(response) {
+    fetchVideoIds().then(response => {
         videoIds = response;
         shuffledVideoIds = shuffleArray(videoIds);
         createPlayer();
@@ -39,6 +37,8 @@ function onYouTubeIframeAPIReady() {
 
 function createPlayer() {
     player = new YT.Player('player', {
+        height: '75vh',
+        width: '75vw',
         playerVars: {
             autoplay: 1,
             controls: 0,
@@ -46,7 +46,8 @@ function createPlayer() {
             rel: 0,
             modestbranding: 1,
             showinfo: 0,
-            playsinline: 1
+            playsinline: 1,
+            mute: isMuted ? 1 : 0
         },
         events: {
             'onReady': onPlayerReady,
@@ -57,10 +58,6 @@ function createPlayer() {
 
 function onPlayerReady(event) {
     event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
-    player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
-    window.addEventListener('resize', function() {
-        player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
-    });
     setInterval(updateProgressBar, 200);
 }
 
@@ -77,31 +74,17 @@ function playNextVideo() {
         shuffledVideoIds = shuffleArray(videoIds);
     }
     player.loadVideoById(shuffledVideoIds[currentIndex].id);
-    updateAudioButton();
 }
 
 function toggleMute() {
-    if (isMuted) {
-        player.unMute();
-    } else {
-        player.mute();
-    }
     isMuted = !isMuted;
-    updateAudioButton();
-}
-
-function updateAudioButton() {
-    var audioButton = document.getElementById('audio');
-    if (isMuted) {
-        audioButton.classList.add('muted');
-    } else {
-        audioButton.classList.remove('muted');
-    }
+    player.setVolume(isMuted ? 0 : 100);
+    document.getElementById('audio').classList.toggle('active');
 }
 
 function updateProgressBar() {
-    var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-    var progressBar = document.getElementById('progress-bar');
+    let playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+    let progressBar = document.getElementById('progress-bar');
     progressBar.style.width = playerProgress + '%';
 }
 
