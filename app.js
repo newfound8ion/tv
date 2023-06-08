@@ -47,7 +47,7 @@ function createPlayer() {
             modestbranding: 1,
             showinfo: 0,
             playsinline: 1,
-            mute: isMuted ? 1 : 0
+            mute: 1 // Initially muted
         },
         events: {
             'onReady': onPlayerReady,
@@ -58,7 +58,7 @@ function createPlayer() {
 
 function onPlayerReady(event) {
     event.target.playVideo();
-    updateAudioButton();
+    createUnmuteButton(); // Create the unmute button dynamically
     setInterval(updateProgressBar, 200);
 }
 
@@ -77,14 +77,25 @@ function playNextVideo() {
     player.loadVideoById(shuffledVideoIds[currentIndex].id);
 }
 
-function toggleMute() {
-    if (isMuted) {
-        player.unMute();
-    } else {
-        player.mute();
+function unmutePlayer() {
+    player.unMute();
+    isMuted = false;
+    removeUnmuteButton(); // Remove the unmute button after it's clicked
+}
+
+function createUnmuteButton() {
+    const container = document.getElementById('player-container');
+    const unmuteButton = document.createElement('button');
+    unmuteButton.innerText = 'Unmute';
+    unmuteButton.addEventListener('click', unmutePlayer);
+    container.appendChild(unmuteButton);
+}
+
+function removeUnmuteButton() {
+    const unmuteButton = document.querySelector('#player-container button');
+    if (unmuteButton) {
+        unmuteButton.remove();
     }
-    isMuted = !isMuted;
-    updateAudioButton();
 }
 
 function updateProgressBar() {
@@ -93,15 +104,5 @@ function updateProgressBar() {
     progressBar.style.width = playerProgress + '%';
 }
 
-function updateAudioButton() {
-    const audioButton = document.getElementById('audio');
-    if (isMuted) {
-        audioButton.classList.add('muted');
-    } else {
-        audioButton.classList.remove('muted');
-    }
-}
-
 document.getElementById('logo').addEventListener('click', playNextVideo);
 document.getElementById('next').addEventListener('click', playNextVideo);
-document.getElementById('audio').addEventListener('click', toggleMute);
