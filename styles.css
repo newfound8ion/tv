@@ -1,95 +1,67 @@
 body {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #000000;
-  font-family: 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #000000;
+    font-family: Arial, sans-serif;
 }
 
-header {
-  text-align: center;
-}
-
-h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-#language-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.language-title {
-  margin: 0 10px;
-  font-size: 18px;
-  color: #ffffff;
+#player-container {
+    position: relative;
+    width: 75vw;
+    height: 75vh;
+    border: 2px solid white;
 }
 
 #player {
-  width: 75vw;
-  height: 75vh;
-  border: none;
+    width: 100%;
+    height: 100%;
+}
+
+.control {
+    position: absolute;
+    bottom: -60px;
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
+}
+
+#logo {
+    left: 8px;
+    background-image: url('/download.png');
+}
+
+#next {
+    right: 58px;
+    background-image: url('/fast-forward.png');
+}
+
+#audio {
+    right: 8px;
+    background-image: url('/speaker-filled-audio-tool.png');
+}
+
+.control:hover {
+    opacity: 1;
 }
 
 #progress-bar-container {
-  position: relative;
-  width: 100%;
-  height: 3px;
-  background-color: rgba(255, 255, 255, 0.5);
-  overflow: hidden;
+    position: absolute;
+    bottom: -70px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 #progress-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 1);
-  transition: width 0.2s linear;
+    width: 0;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1);
 }
-
-#logo,
-#next,
-#audio {
-  width: 50px;
-  height: 50px;
-  margin: 20px;
-}
-
-#caption-links {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.caption-link {
-  display: inline-block;
-  margin: 0 5px;
-  font-size: 14px;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.caption-link:hover {
-  text-decoration: underline;
-}
-
-.caption-link[data-lang="en"]:before { content: "English"; }
-.caption-link[data-lang="es"]:before { content: "Español"; }
-.caption-link[data-lang="zh-Hans"]:before { content: "中文"; }
-.caption-link[data-lang="hi"]:before { content: "हिन्दी"; }
-.caption-link[data-lang="ar"]:before { content: "العربية"; }
-.caption-link[data-lang="ru"]:before { content: "Русский"; }
-.caption-link[data-lang="he"]:before { content: "עברית"; }
-.caption-link[data-lang="bn"]:before { content: "বাংলা"; }
-.caption-link[data-lang="th"]:before { content: "ไทย"; }
-.caption-link[data-lang="fr"]:before { content: "Français"; }
-.caption-link[data-lang="de"]:before { content: "Deutsch"; }
