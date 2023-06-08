@@ -90,12 +90,36 @@ function toggleMute() {
   document.getElementById('audio').classList.toggle('active');
 }
 
-function updateProgressBar() {
-  const playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-  const progressBar = document.getElementById('progress-bar');
-  progressBar.style.width = playerProgress + '%';
+// Add this code snippet at the end of the script
+
+// Check if the video is initially muted and adjust the audio icon's opacity accordingly
+if (player.isMuted()) {
+  document.getElementById('audio').style.opacity = '0.5';
 }
 
-document.getElementById('logo').addEventListener('click', playNextVideo);
-document.getElementById('next').addEventListener('click', playNextVideo);
-document.getElementById('audio').addEventListener('click', toggleMute);
+// Enable or disable captions based on the selected language
+function toggleCaptions(language) {
+  if (language === 'none') {
+    player.unloadModule('captions');
+  } else {
+    player.loadModule('captions', {
+      'playerCaptionsTracklist': [{
+        'languageCode': language,
+        'kind': 'asr'
+      }],
+      'playerVars': {
+        'cc_load_policy': 1,
+        'cc_lang_pref': language
+      }
+    });
+  }
+}
+
+// Attach click event listeners to caption links
+document.querySelectorAll('.caption-link').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    event.preventDefault();
+    const language = event.target.dataset.lang;
+    toggleCaptions(language);
+  });
+});
