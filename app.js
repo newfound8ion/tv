@@ -1,8 +1,4 @@
-var player;
-var videoIds = [];
-var currentIndex;
-var isMuted = false;
-
+// Fetch the video IDs from the JSON file
 function fetchVideoIds(callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -11,10 +7,11 @@ function fetchVideoIds(callback) {
             callback(response);
         }
     };
-    xhr.open("GET", "/videos.json", true);
+    xhr.open("GET", "videos.json", true);
     xhr.send();
 }
 
+// Shuffle the video IDs array
 function shuffleArray(array) {
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -25,8 +22,41 @@ function shuffleArray(array) {
     return array;
 }
 
+// Create YouTube player
+var player;
+var videoIds = [];
+var shuffledVideoIds = [];
+var currentIndex = 0;
+var isMuted = false;
+
+function onYouTubeIframeAPIReady() {
+    fetchVideoIds(function(response) {
+        videoIds = response;
+        shuffledVideoIds = shuffleArray(videoIds);
+        createPlayer();
+    });
+}
+
+function createPlayer() {
+    player = new YT.Player('player', {
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            rel: 0,
+            modestbranding: 1,
+            showinfo: 0,
+            playsinline: 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
 function onPlayerReady(event) {
-    event.target.loadVideoById(videoIds[currentIndex].id);
+    event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
     player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
     window.addEventListener('resize', function() {
         player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
@@ -42,11 +72,11 @@ function onPlayerStateChange(event) {
 
 function playNextVideo() {
     currentIndex++;
-    if (currentIndex >= videoIds.length) {
+    if (currentIndex >= shuffledVideoIds.length) {
         currentIndex = 0;
-        videoIds = shuffleArray(videoIds);
+        shuffledVideoIds = shuffleArray(videoIds);
     }
-    player.loadVideoById(videoIds[currentIndex].id);
+    player.loadVideoById(shuffledVideoIds[currentIndex].id);
     updateAudioButton();
 }
 
@@ -61,7 +91,7 @@ function toggleMute() {
 }
 
 function updateAudioButton() {
-    var audioButton = document.getElementById('unmute');
+    var audioButton = document.getElementById('audio');
     if (isMuted) {
         audioButton.classList.add('muted');
     } else {
@@ -71,33 +101,10 @@ function updateAudioButton() {
 
 function updateProgressBar() {
     var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-    document.getElementById('progress').style.width = playerProgress + '%';
+    var progressBar = document.getElementById('progress-bar');
+    progressBar.style.width = playerProgress + '%';
 }
 
-fetchVideoIds(function(response) {
-    videoIds = response;
-    videoIds = shuffleArray(videoIds);
-    currentIndex = 0;
-    player = new YT.Player('player', {
-        height: '75vh',
-        width: '100vw',
-        videoId: videoIds[currentIndex].id,
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            disablekb: 1,
-            rel: 0,
-            modestbranding: 1,
-            showinfo: 0,
-            playsinline: 1
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-});
-
-document.getElementById('next').addEventListener('click', playNextVideo);
 document.getElementById('logo').addEventListener('click', playNextVideo);
-document.getElementById('unmute').addEventListener('click', toggleMute);
+document.getElementById('next').addEventListener('click', playNextVideo);
+document.getElementById('audio').addEventListener('click', toggleMute);
