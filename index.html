@@ -13,22 +13,24 @@
             background-color: #000000;
         }
         
-        #player {
-            width: 50vw;
-            height: 50vh;
+        .player-container {
+            position: relative;
+            width: 75vw;
+            height: 75vh;
         }
         
-        #progress-bar-container {
+        .progress-bar-container {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 3px;
+            height: 8px;
             background-color: rgba(255, 255, 255, 0.5);
             overflow: hidden;
+            margin-top: 8px;
         }
         
-        #progress-bar {
+        .progress-bar {
             position: absolute;
             top: 0;
             left: 0;
@@ -40,29 +42,32 @@
         
         #logo {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
-            width: 50px;
-            height: 50px;
+            bottom: 18px;
+            left: 18px;
+            width: 75px;
+            height: 75px;
             cursor: pointer;
+            margin: 8px;
         }
         
         #next {
             position: fixed;
-            bottom: 20px;
-            right: 70px;
-            width: 30px;
-            height: 30px;
+            bottom: 26px;
+            right: 78px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
+            margin: 8px;
         }
         
         #audio {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 30px;
-            height: 30px;
+            bottom: 26px;
+            right: 28px;
+            width: 45px;
+            height: 45px;
             opacity: 1;
+            margin: 8px;
         }
         
         #audio.muted {
@@ -71,9 +76,13 @@
     </style>
 </head>
 <body>
-    <div id="player"></div>
-    <div id="progress-bar-container">
-        <div id="progress-bar"></div>
+    <div id="player1" class="player-container"></div>
+    <div id="progress-bar-container1" class="progress-bar-container">
+        <div id="progress-bar1" class="progress-bar"></div>
+    </div>
+    <div id="player2" class="player-container"></div>
+    <div id="progress-bar-container2" class="progress-bar-container">
+        <div id="progress-bar2" class="progress-bar"></div>
     </div>
     <img id="logo" src="download.png">
     <img id="next" src="fast-forward.png">
@@ -110,8 +119,8 @@
             return array;
         }
 
-        // Create YouTube player
-        var player;
+        // Create YouTube players
+        var players = [];
         var videoIds = [];
         var shuffledVideoIds = [];
         var currentIndex = 0;
@@ -121,76 +130,91 @@
             fetchVideoIds(function(response) {
                 videoIds = response;
                 shuffledVideoIds = shuffleArray(videoIds);
-                createPlayer();
+                createPlayers();
             });
         }
 
-        function createPlayer() {
-            player = new YT.Player('player', {
-                playerVars: {
-                    autoplay: 1,
-                    controls: 0,
-                    disablekb: 1,
-                    rel: 0,
-                    modestbranding: 1,
-                    showinfo: 0,
-                    playsinline: 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+        function createPlayers() {
+            var playerElements = document.getElementsByClassName('player-container');
+            var progressBarElements = document.getElementsByClassName('progress-bar');
+            
+            for (var i = 0; i < playerElements.length; i++) {
+                var player = new YT.Player(playerElements[i], {
+                    videoId: shuffledVideoIds[i].id,
+                    playerVars: {
+                        autoplay: 1,
+                        controls: 0,
+                        disablekb: 1,
+                        rel: 0,
+                        modestbranding: 1,
+                        showinfo: 0,
+                        playsinline: 1
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+                players.push(player);
+            }
+
+            function onPlayerReady(event) {
+                event.target.playVideo();
+                event.target.setVolume(100);
+                event.target.unMute(); // Unmute once the video starts playing
+                var playerIndex = players.indexOf(event.target);
+                var progressBar = progressBarElements[playerIndex];
+                progressBar.style.width = '0';
+                setInterval(function() {
+                    updateProgressBar(event.target, progressBar);
+                }, 200);
+            }
+
+            function onPlayerStateChange(event) {
+                if (event.data === YT.PlayerState.ENDED) {
+                    playNextVideo();
                 }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
-            player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
-            window.addEventListener('resize', function() {
-                player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
-            });
-            setInterval(updateProgressBar, 200);
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                playNextVideo();
             }
-        }
 
-        function playNextVideo() {
-            currentIndex++;
-            if (currentIndex >= shuffledVideoIds.length) {
-                currentIndex = 0;
-                shuffledVideoIds = shuffleArray(videoIds);
+            function playNextVideo() {
+                currentIndex++;
+                if (currentIndex >= shuffledVideoIds.length) {
+                    currentIndex = 0;
+                    shuffledVideoIds = shuffleArray(videoIds);
+                }
+                for (var i = 0; i < players.length; i++) {
+                    players[i].loadVideoById(shuffledVideoIds[i].id);
+                }
+                updateAudioButton();
             }
-            player.loadVideoById(shuffledVideoIds[currentIndex].id);
-            updateAudioButton();
-        }
 
-        function toggleMute() {
-            if (isMuted) {
-                player.unMute();
-            } else {
-                player.mute();
+            function toggleMute() {
+                if (isMuted) {
+                    for (var i = 0; i < players.length; i++) {
+                        players[i].unMute();
+                    }
+                } else {
+                    for (var i = 0; i < players.length; i++) {
+                        players[i].mute();
+                    }
+                }
+                isMuted = !isMuted;
+                updateAudioButton();
             }
-            isMuted = !isMuted;
-            updateAudioButton();
-        }
 
-        function updateAudioButton() {
-            var audioButton = document.getElementById('audio');
-            if (isMuted) {
-                audioButton.classList.add('muted');
-            } else {
-                audioButton.classList.remove('muted');
+            function updateAudioButton() {
+                var audioButton = document.getElementById('audio');
+                if (isMuted) {
+                    audioButton.classList.add('muted');
+                } else {
+                    audioButton.classList.remove('muted');
+                }
             }
-        }
 
-        function updateProgressBar() {
-            var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-            var progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = playerProgress + '%';
+            function updateProgressBar(player, progressBar) {
+                var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+                progressBar.style.width = playerProgress + '%';
+            }
         }
 
         document.getElementById('logo').addEventListener('click', playNextVideo);
