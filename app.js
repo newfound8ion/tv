@@ -58,7 +58,7 @@ function createPlayer() {
 
 function onPlayerReady(event) {
     event.target.playVideo();
-    event.target.mute();
+    updateAudioButton();
     setInterval(updateProgressBar, 200);
 }
 
