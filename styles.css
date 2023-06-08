@@ -5,63 +5,56 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #000000;
-    font-family: Arial, sans-serif;
-}
-
-#player-container {
-    position: relative;
-    width: 75vw;
-    height: 75vh;
-    border: 2px solid white;
+    background-color: #000;
+    overflow: hidden;
 }
 
 #player {
-    width: 100%;
-    height: 100%;
-}
-
-.control {
-    position: absolute;
-    bottom: -60px;
-    width: 50px;
-    height: 50px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.5;
-}
-
-#logo {
-    left: 8px;
-    background-image: url('/download.png');
-}
-
-#next {
-    right: 58px;
-    background-image: url('/fast-forward.png');
-}
-
-#audio {
-    right: 8px;
-    background-image: url('/speaker-filled-audio-tool.png');
-}
-
-.control:hover {
-    opacity: 1;
+    width: 75vw;
+    height: 75vh;
 }
 
 #progress-bar-container {
     position: absolute;
-    bottom: -70px;
+    bottom: 0;
     left: 0;
     width: 100%;
     height: 8px;
     background-color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
 }
 
 #progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 0;
     height: 100%;
     background-color: rgba(255, 255, 255, 1);
+    transition: width 0.2s linear;
+}
+
+.control {
+    position: absolute;
+    bottom: 20px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+#logo {
+    left: calc(50vw - 37.5vw);
+}
+
+#next {
+    right: calc(50vw - 37.5vw);
+}
+
+#audio {
+    right: calc(50vw - 37.5vw + 40px);
+}
+
+#audio.active {
+    opacity: 1;
 }
