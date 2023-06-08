@@ -102,18 +102,11 @@ function updateProgressBar() {
 }
 
 function activateCaptions(lang) {
-  let captionText = captions[lang];
-  let captionsElement = document.createElement('div');
-  captionsElement.innerText = captionText;
-  captionsElement.className = 'captions';
-  player.getIframe().contentWindow.document.body.appendChild(captionsElement);
+  player.setOption('captions', 'track', { languageCode: lang, 'kind': 'asr' });
 }
 
 function deactivateCaptions() {
-  let captionsElements = player.getIframe().contentWindow.document.getElementsByClassName('captions');
-  while (captionsElements.length > 0) {
-    captionsElements[0].parentNode.removeChild(captionsElements[0]);
-  }
+  player.setOption('captions', 'track', null);
 }
 
 document.getElementById('logo').addEventListener('click', playNextVideo);
@@ -122,7 +115,7 @@ document.getElementById('audio').addEventListener('click', toggleMute);
 
 let captionLinks = document.getElementsByClassName('caption-link');
 for (let i = 0; i < captionLinks.length; i++) {
-  captionLinks[i].addEventListener('click', function(e) {
+  captionLinks[i].addEventListener('click', function (e) {
     e.preventDefault();
     let lang = this.getAttribute('data-lang');
     deactivateCaptions();
