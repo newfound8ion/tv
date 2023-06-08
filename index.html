@@ -1,19 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Newlife TV</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Newlife TV</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Helvetica+Neue&display=swap">
 </head>
 <body>
-    <div id="player"></div>
-    <div id="progress-bar-container">
-        <div id="progress-bar"></div>
-    </div>
-    <img id="logo" class="control" src="download.png">
-    <img id="next" class="control" src="fast-forward.png">
-    <img id="audio" class="control" src="speaker-filled-audio-tool.png">
+  <header>
+    <h1>Newlife TV</h1>
+  </header>
+  <div id="language-container">
+    <h1 class="language-title" lang="en">English</h1>
+    <h1 class="language-title" lang="es">Español</h1>
+    <h1 class="language-title" lang="zh-Hans">中文</h1>
+    <h1 class="language-title" lang="hi">हिन्दी</h1>
+    <h1 class="language-title" lang="ar">العربية</h1>
+    <h1 class="language-title" lang="ru">Русский</h1>
+    <h1 class="language-title" lang="he">עברית</h1>
+    <h1 class="language-title" lang="bn">বাংলা</h1>
+    <h1 class="language-title" lang="th">ไทย</h1>
+    <h1 class="language-title" lang="fr">Français</h1>
+    <h1 class="language-title" lang="de">Deutsch</h1>
+  </div>
+  <div id="player"></div>
+  <div id="progress-bar-container">
+    <div id="progress-bar"></div>
+  </div>
+  <img id="logo" src="download.png">
+  <img id="next" src="fast-forward.png">
+  <img id="audio" src="speaker-filled-audio-tool.png">
+  <div id="caption-links">
+    <span class="caption-link" data-lang="en">English</span>
+    <span class="caption-link" data-lang="es">Español</span>
+    <span class="caption-link" data-lang="zh-Hans">中文</span>
+    <span class="caption-link" data-lang="hi">हिन्दी</span>
+    <span class="caption-link" data-lang="ar">العربية</span>
+    <span class="caption-link" data-lang="ru">Русский</span>
+    <span class="caption-link" data-lang="he">עברית</span>
+    <span class="caption-link" data-lang="bn">বাংলা</span>
+    <span class="caption-link" data-lang="th">ไทย</span>
+    <span class="caption-link" data-lang="fr">Français</span>
+    <span class="caption-link" data-lang="de">Deutsch</span>
+  </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
