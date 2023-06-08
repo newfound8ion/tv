@@ -2,16 +2,18 @@
 <html>
 <head>
     <title>Newlife TV</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <div id="player"></div>
+    <div id="player-container">
+        <div id="player"></div>
+        <div id="logo" class="control"></div>
+        <div id="next" class="control"></div>
+        <div id="audio" class="control"></div>
+    </div>
     <div id="progress-bar-container">
         <div id="progress-bar"></div>
     </div>
-    <img id="logo" src="download.png">
-    <img id="next" src="fast-forward.png">
-    <img id="audio" src="speaker-filled-audio-tool.png">
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="app.js"></script>
