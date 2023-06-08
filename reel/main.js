@@ -1,4 +1,4 @@
-// A manually curated list of public video IDs
+// Provided list of video IDs
 const videoIds = ["179509486", "171711330", "70405006", "615260697", "49258551"]; 
 
 // Randomize the order of the video IDs
@@ -28,18 +28,19 @@ videoIds.forEach(videoId => {
         responsive: true,
     };
 
-    const playerContainer = document.createElement("div");
-    document.getElementById("container").appendChild(playerContainer);
+    const videoWrapper = document.createElement("div");
+    videoWrapper.classList.add("video-wrapper");
+    document.getElementById("container").appendChild(videoWrapper);
 
-    const player = new Vimeo.Player(playerContainer, options);
+    const player = new Vimeo.Player(videoWrapper, options);
 
     player.setVolume(0);
 
     // We're keeping track of the player instances and their respective HTML elements here
     players.push({
         instance: player,
-        element: playerContainer,
+        element: videoWrapper,
     });
 
-    observer.observe(playerContainer);
+    observer.observe(videoWrapper);
 });
