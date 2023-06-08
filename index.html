@@ -1,54 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Newlife TV</title>
+    <title>YouTube Player</title>
     <style>
         body {
             margin: 0;
-            padding: 8px;
-        }
-        
-        #player-container {
-            position: relative;
-            width: calc(50vw - 16px);
-            height: calc(50vh - 16px);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000000;
         }
         
         #player {
-            width: 100%;
-            height: 100%;
-        }
-        
-        #progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: #FFFFFF;
-            transform-origin: left;
-            transform: scaleX(0);
-            transition: transform 0.2s linear;
+            width: 50vw;
+            height: 50vh;
         }
         
         #logo {
-            position: absolute;
+            position: fixed;
             bottom: 10px;
             left: 10px;
             width: 50px;
             height: 50px;
+            cursor: pointer;
         }
         
         #next {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             right: 70px;
             width: 30px;
             height: 30px;
+            cursor: pointer;
         }
         
         #audio {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
             right: 20px;
             width: 30px;
@@ -62,10 +51,7 @@
     </style>
 </head>
 <body>
-    <div id="player-container">
-        <div id="player"></div>
-        <div id="progress-bar"></div>
-    </div>
+    <div id="player"></div>
     <img id="logo" src="download.png">
     <img id="next" src="fast-forward.png">
     <img id="audio" src="speaker-filled-audio-tool.png">
@@ -106,7 +92,7 @@
         var videoIds = [];
         var shuffledVideoIds = [];
         var currentIndex = 0;
-        var isMuted = true;
+        var isMuted = false;
 
         function onYouTubeIframeAPIReady() {
             fetchVideoIds(function(response) {
@@ -118,9 +104,6 @@
 
         function createPlayer() {
             player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: shuffledVideoIds[currentIndex].id,
                 playerVars: {
                     autoplay: 1,
                     controls: 0,
@@ -128,8 +111,7 @@
                     rel: 0,
                     modestbranding: 1,
                     showinfo: 0,
-                    playsinline: 1,
-                    mute: 1 // Start muted by default
+                    playsinline: 1
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -139,14 +121,11 @@
         }
 
         function onPlayerReady(event) {
-            event.target.playVideo();
-            event.target.setVolume(100);
-            event.target.unMute(); // Unmute once the video starts playing
-            event.target.setSize(window.innerWidth * 0.5 - 16, window.innerHeight * 0.5 - 16);
+            event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+            player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
             window.addEventListener('resize', function() {
-                player.setSize(window.innerWidth * 0.5 - 16, window.innerHeight * 0.5 - 16);
+                player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
             });
-            setInterval(updateProgressBar, 200);
         }
 
         function onPlayerStateChange(event) {
@@ -184,12 +163,7 @@
             }
         }
 
-        function updateProgressBar() {
-            var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-            var progressBar = document.getElementById('progress-bar');
-            progressBar.style.transform = `scaleX(${playerProgress / 100})`;
-        }
-
+        document.getElementById('logo').addEventListener('click', playNextVideo);
         document.getElementById('next').addEventListener('click', playNextVideo);
         document.getElementById('audio').addEventListener('click', toggleMute);
     </script>
