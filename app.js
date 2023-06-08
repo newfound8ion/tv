@@ -60,7 +60,6 @@ function createPlayer() {
 function onPlayerReady(event) {
   player.loadVideoById(shuffledVideoIds[currentIndex].id);
   player.setVolume(100);
-  document.getElementById('audio').style.opacity = isMuted ? '0.5' : '1';
   setInterval(updateProgressBar, 200);
 }
 
@@ -97,4 +96,6 @@ function updateProgressBar() {
   progressBar.style.width = playerProgress + '%';
 }
 
-document.getElementById('logo').
+document.getElementById('logo').addEventListener('click', playNextVideo);
+document.getElementById('next').addEventListener('click', playNextVideo);
+document.getElementById('audio').addEventListener('click', toggleMute);
