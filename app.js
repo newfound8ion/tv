@@ -25,7 +25,6 @@ let player;
 let videoIds = [];
 let shuffledVideoIds = [];
 let currentIndex = 0;
-let isFirstLoad = true;
 let isMuted = true;
 
 function onYouTubeIframeAPIReady() {
@@ -41,7 +40,7 @@ function createPlayer() {
         height: '75vh',
         width: '75vw',
         playerVars: {
-            autoplay: isFirstLoad ? 1 : 0,
+            autoplay: 1,
             controls: 0,
             disablekb: 1,
             rel: 0,
@@ -58,14 +57,8 @@ function createPlayer() {
 }
 
 function onPlayerReady(event) {
-    if (isFirstLoad) {
-        isFirstLoad = false;
-        setTimeout(() => {
-            player.unMute();
-            isMuted = false;
-            updateAudioButton();
-        }, 1000); // Delay unmuting to ensure the video has started playing
-    }
+    event.target.playVideo();
+    event.target.mute();
     setInterval(updateProgressBar, 200);
 }
 
