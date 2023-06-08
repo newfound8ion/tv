@@ -59,6 +59,7 @@ function createPlayer() {
 function onPlayerReady(event) {
     event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
     setInterval(updateProgressBar, 200);
+    updateAudioButton();
 }
 
 function onPlayerStateChange(event) {
@@ -74,12 +75,22 @@ function playNextVideo() {
         shuffledVideoIds = shuffleArray(videoIds);
     }
     player.loadVideoById(shuffledVideoIds[currentIndex].id);
+    updateAudioButton();
 }
 
 function toggleMute() {
     isMuted = !isMuted;
     player.setVolume(isMuted ? 0 : 100);
-    document.getElementById('audio').classList.toggle('active');
+    updateAudioButton();
+}
+
+function updateAudioButton() {
+    const audioButton = document.getElementById('audio');
+    if (isMuted) {
+        audioButton.classList.add('muted');
+    } else {
+        audioButton.classList.remove('muted');
+    }
 }
 
 function updateProgressBar() {
