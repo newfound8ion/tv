@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Newlife TV</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>YouTube Player</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="player">
-        <div id="player"></div>
-        <div class="controls">
-            <img id="logo" src="/download.png" alt="Logo">
-            <img id="unmute" src="/speaker-filled-audio-tool.png" alt="Unmute" class="muted">
-            <img id="next" src="/fast-forward.png" alt="Next">
-        </div>
-        <div class="progress-bar">
-            <div id="progress"></div>
-        </div>
+    <div id="player"></div>
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
     </div>
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <img id="logo" src="download.png">
+    <img id="next" src="fast-forward.png">
+    <img id="unmute" class="muted" src="speaker-filled-audio-tool.png">
     <script src="app.js"></script>
 </body>
 </html>
