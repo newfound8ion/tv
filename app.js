@@ -1,70 +1,103 @@
 var player;
 var videoIds = [];
-var currentVideoIndex;
-var muted = true;
-fetch('/videos.json')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+var currentIndex;
+var isMuted = false;
+
+function fetchVideoIds(callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            callback(response);
         }
-        return response.json();
-    })
-    .then(data => {
-        videoIds = data.map(video => video.id);
-        currentVideoIndex = Math.floor(Math.random() * videoIds.length);
-        player = new YT.Player('player', {
-            height: '360',
-            width: '640',
-            videoId: videoIds[currentVideoIndex],
-            playerVars: {
-                autoplay: 1,
-                controls: 0,
-                showinfo: 0,
-                rel: 0,
-                modestbranding: 1,
-            },
-            events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
-            }
-        });
-    })
-    .catch(e => {
-        console.error('An error occurred while fetching the videos.json file:', e);
-    });
+    };
+    xhr.open("GET", "/videos.json", true);
+    xhr.send();
+}
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
 
 function onPlayerReady(event) {
-    event.target.mute();
+    event.target.loadVideoById(videoIds[currentIndex].id);
+    player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+    window.addEventListener('resize', function() {
+        player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+    });
+    setInterval(updateProgressBar, 200);
 }
 
 function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) {
-        nextVideo();
+    if (event.data === YT.PlayerState.ENDED) {
+        playNextVideo();
     }
 }
 
-function nextVideo() {
-    currentVideoIndex = Math.floor(Math.random() * videoIds.length);
-    player.loadVideoById(videoIds[currentVideoIndex]);
+function playNextVideo() {
+    currentIndex++;
+    if (currentIndex >= videoIds.length) {
+        currentIndex = 0;
+        videoIds = shuffleArray(videoIds);
+    }
+    player.loadVideoById(videoIds[currentIndex].id);
+    updateAudioButton();
 }
 
 function toggleMute() {
-    if (player.isMuted()) {
+    if (isMuted) {
         player.unMute();
-        document.getElementById('unmute').classList.remove('muted');
-        muted = false;
     } else {
         player.mute();
-        document.getElementById('unmute').classList.add('muted');
-        muted = true;
+    }
+    isMuted = !isMuted;
+    updateAudioButton();
+}
+
+function updateAudioButton() {
+    var audioButton = document.getElementById('unmute');
+    if (isMuted) {
+        audioButton.classList.add('muted');
+    } else {
+        audioButton.classList.remove('muted');
     }
 }
 
-document.getElementById('next').addEventListener('click', nextVideo);
-document.getElementById('logo').addEventListener('click', nextVideo);
-document.getElementById('unmute').addEventListener('click', toggleMute);
+function updateProgressBar() {
+    var playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+    document.getElementById('progress').style.width = playerProgress + '%';
+}
 
-setInterval(function() {
-    var progress = (player.getCurrentTime() / player.getDuration()) * 100;
-    document.getElementById('progress').style.width = `${progress}%`;
-}, 1000);
+fetchVideoIds(function(response) {
+    videoIds = response;
+    videoIds = shuffleArray(videoIds);
+    currentIndex = 0;
+    player = new YT.Player('player', {
+        height: '75vh',
+        width: '100vw',
+        videoId: videoIds[currentIndex].id,
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            rel: 0,
+            modestbranding: 1,
+            showinfo: 0,
+            playsinline: 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+});
+
+document.getElementById('next').addEventListener('click', playNextVideo);
+document.getElementById('logo').addEventListener('click', playNextVideo);
+document.getElementById('unmute').addEventListener('click', toggleMute);
