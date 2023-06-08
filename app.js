@@ -26,9 +26,22 @@ let videoIds = [];
 let shuffledVideoIds = [];
 let currentIndex = 0;
 let isMuted = true;
+let captions = {
+  en: "English",
+  es: "Español",
+  "zh-Hans": "中文",
+  hi: "हिन्दी",
+  ar: "العربية",
+  ru: "Русский",
+  he: "עברית",
+  bn: "বাংলা",
+  th: "ไทย",
+  fr: "Français",
+  de: "Deutsch"
+};
 
 function onYouTubeIframeAPIReady() {
-  fetchVideoIds().then((response) => {
+  fetchVideoIds().then(response => {
     videoIds = response;
     shuffledVideoIds = shuffleArray(videoIds);
     createPlayer();
@@ -37,8 +50,8 @@ function onYouTubeIframeAPIReady() {
 
 function createPlayer() {
   player = new YT.Player('player', {
-    height: '75vh',
-    width: '75vw',
+    height: '360',
+    width: '640',
     playerVars: {
       autoplay: 1,
       controls: 0,
@@ -47,19 +60,17 @@ function createPlayer() {
       modestbranding: 1,
       showinfo: 0,
       playsinline: 1,
-      mute: 1,
-      enablejsapi: 1
+      mute: isMuted ? 1 : 0
     },
     events: {
-      onReady: onPlayerReady,
-      onStateChange: onPlayerStateChange,
-    },
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
   });
 }
 
 function onPlayerReady(event) {
-  player.loadVideoById(shuffledVideoIds[currentIndex].id);
-  player.setVolume(100);
+  event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
   setInterval(updateProgressBar, 200);
 }
 
@@ -80,46 +91,41 @@ function playNextVideo() {
 
 function toggleMute() {
   isMuted = !isMuted;
-  if (isMuted) {
-    player.mute();
-    document.getElementById('audio').style.opacity = '0.5';
-  } else {
-    player.unMute();
-    document.getElementById('audio').style.opacity = '1';
-  }
-  document.getElementById('audio').classList.toggle('active');
+  player.setVolume(isMuted ? 0 : 100);
+  document.getElementById('audio').classList.toggle('muted');
 }
 
-// Add this code snippet at the end of the script
-
-// Check if the video is initially muted and adjust the audio icon's opacity accordingly
-if (player.isMuted()) {
-  document.getElementById('audio').style.opacity = '0.5';
+function updateProgressBar() {
+  let playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+  let progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = playerProgress + '%';
 }
 
-// Enable or disable captions based on the selected language
-function toggleCaptions(language) {
-  if (language === 'none') {
-    player.unloadModule('captions');
-  } else {
-    player.loadModule('captions', {
-      'playerCaptionsTracklist': [{
-        'languageCode': language,
-        'kind': 'asr'
-      }],
-      'playerVars': {
-        'cc_load_policy': 1,
-        'cc_lang_pref': language
-      }
-    });
+function activateCaptions(lang) {
+  let captionText = captions[lang];
+  let captionsElement = document.createElement('div');
+  captionsElement.innerText = captionText;
+  captionsElement.className = 'captions';
+  player.getIframe().contentWindow.document.body.appendChild(captionsElement);
+}
+
+function deactivateCaptions() {
+  let captionsElements = player.getIframe().contentWindow.document.getElementsByClassName('captions');
+  while (captionsElements.length > 0) {
+    captionsElements[0].parentNode.removeChild(captionsElements[0]);
   }
 }
 
-// Attach click event listeners to caption links
-document.querySelectorAll('.caption-link').forEach((link) => {
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    const language = event.target.dataset.lang;
-    toggleCaptions(language);
+document.getElementById('logo').addEventListener('click', playNextVideo);
+document.getElementById('next').addEventListener('click', playNextVideo);
+document.getElementById('audio').addEventListener('click', toggleMute);
+
+let captionLinks = document.getElementsByClassName('caption-link');
+for (let i = 0; i < captionLinks.length; i++) {
+  captionLinks[i].addEventListener('click', function(e) {
+    e.preventDefault();
+    let lang = this.getAttribute('data-lang');
+    deactivateCaptions();
+    activateCaptions(lang);
   });
-});
+}
