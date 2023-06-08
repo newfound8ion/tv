@@ -47,7 +47,6 @@ function createPlayer() {
       modestbranding: 1,
       showinfo: 0,
       playsinline: 1,
-      mute: isMuted ? 1 : 0,
     },
     events: {
       onReady: onPlayerReady,
@@ -57,16 +56,15 @@ function createPlayer() {
 }
 
 function onPlayerReady(event) {
+  setTimeout(() => {
+    player.mute();
+    isMuted = true;
+    updateAudioButton();
+  }, 100); // Delay the mute call by 100 milliseconds
   event.target.playVideo();
 }
 
 function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.PLAYING && isMuted) {
-    player.mute();
-    isMuted = true;
-    updateAudioButton();
-  }
-
   if (event.data === YT.PlayerState.ENDED) {
     playNextVideo();
   }
