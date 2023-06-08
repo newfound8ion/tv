@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>YouTube Player</title>
+    <title>Newlife TV</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #000000;
+            padding: 8px;
         }
         
         #player-container {
             position: relative;
-            width: 50vw;
-            height: 50vh;
+            width: calc(50vw - 16px);
+            height: calc(50vh - 16px);
         }
         
         #player {
@@ -123,6 +118,9 @@
 
         function createPlayer() {
             player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: shuffledVideoIds[currentIndex].id,
                 playerVars: {
                     autoplay: 1,
                     controls: 0,
@@ -144,9 +142,9 @@
             event.target.playVideo();
             event.target.setVolume(100);
             event.target.unMute(); // Unmute once the video starts playing
-            event.target.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+            event.target.setSize(window.innerWidth * 0.5 - 16, window.innerHeight * 0.5 - 16);
             window.addEventListener('resize', function() {
-                player.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+                player.setSize(window.innerWidth * 0.5 - 16, window.innerHeight * 0.5 - 16);
             });
             setInterval(updateProgressBar, 200);
         }
