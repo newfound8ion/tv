@@ -26,19 +26,25 @@ body {
     bottom: -60px;
     width: 50px;
     height: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 #logo {
     left: 8px;
+    background-image: url('/download.png');
 }
 
 #next {
     right: 58px;
+    background-image: url('/fast-forward.png');
 }
 
 #audio {
     right: 8px;
+    background-image: url('/speaker-filled-audio-tool.png');
 }
 
 .control:hover {
