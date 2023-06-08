@@ -26,6 +26,7 @@ let videoIds = [];
 let shuffledVideoIds = [];
 let currentIndex = 0;
 let isMuted = true;
+let isFirstLoad = true;
 
 function onYouTubeIframeAPIReady() {
   fetchVideoIds().then((response) => {
@@ -58,6 +59,12 @@ function createPlayer() {
 
 function onPlayerReady(event) {
   setInterval(updateProgressBar, 200);
+
+  // Load the initial video only if it's the first load
+  if (isFirstLoad) {
+    player.loadVideoById(shuffledVideoIds[currentIndex].id);
+    isFirstLoad = false;
+  }
 }
 
 function onPlayerStateChange(event) {
