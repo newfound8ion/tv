@@ -3,7 +3,12 @@ var videoIds = [];
 var currentVideoIndex;
 var muted = true;
 fetch('/videos.json')
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         videoIds = data.map(video => video.id);
         currentVideoIndex = Math.floor(Math.random() * videoIds.length);
@@ -23,6 +28,9 @@ fetch('/videos.json')
                 'onStateChange': onPlayerStateChange
             }
         });
+    })
+    .catch(e => {
+        console.error('An error occurred while fetching the videos.json file:', e);
     });
 
 function onPlayerReady(event) {
