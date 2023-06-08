@@ -40,7 +40,6 @@ function createPlayer() {
     height: '75vh',
     width: '75vw',
     playerVars: {
-      autoplay: 1,
       controls: 0,
       disablekb: 1,
       rel: 0,
@@ -56,12 +55,9 @@ function createPlayer() {
 }
 
 function onPlayerReady(event) {
-  setTimeout(() => {
-    player.mute();
-    isMuted = true;
-    updateAudioButton();
-  }, 100); // Delay the mute call by 100 milliseconds
-  event.target.playVideo();
+  player.mute();
+  isMuted = true;
+  updateAudioButton();
 }
 
 function onPlayerStateChange(event) {
