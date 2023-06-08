@@ -47,7 +47,8 @@ function createPlayer() {
       modestbranding: 1,
       showinfo: 0,
       playsinline: 1,
-      mute: isMuted ? 1 : 0
+      mute: 1,
+      enablejsapi: 1
     },
     events: {
       onReady: onPlayerReady,
@@ -57,7 +58,8 @@ function createPlayer() {
 }
 
 function onPlayerReady(event) {
-  event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+  player.loadVideoById(shuffledVideoIds[currentIndex].id);
+  player.setVolume(100);
   setInterval(updateProgressBar, 200);
 }
 
@@ -78,8 +80,11 @@ function playNextVideo() {
 
 function toggleMute() {
   isMuted = !isMuted;
-  player.mute();
-  player.setVolume(isMuted ? 0 : 100);
+  if (isMuted) {
+    player.mute();
+  } else {
+    player.unMute();
+  }
   document.getElementById('audio').classList.toggle('active');
 }
 
