@@ -60,6 +60,7 @@ function createPlayer() {
 function onPlayerReady(event) {
   player.loadVideoById(shuffledVideoIds[currentIndex].id);
   player.setVolume(100);
+  document.getElementById('audio').style.opacity = isMuted ? '0.5' : '1';
   setInterval(updateProgressBar, 200);
 }
 
@@ -90,9 +91,10 @@ function toggleMute() {
   document.getElementById('audio').classList.toggle('active');
 }
 
-// Add this code snippet at the end of the script
-
-// Check if the video is initially muted and adjust the audio icon's opacity accordingly
-if (player.isMuted()) {
-  document.getElementById('audio').style.opacity = '0.5';
+function updateProgressBar() {
+  const playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+  const progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = playerProgress + '%';
 }
+
+document.getElementById('logo').
