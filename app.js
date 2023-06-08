@@ -82,8 +82,10 @@ function toggleMute() {
   isMuted = !isMuted;
   if (isMuted) {
     player.mute();
+    document.getElementById('audio').style.opacity = '0.5';
   } else {
     player.unMute();
+    document.getElementById('audio').style.opacity = '1';
   }
   document.getElementById('audio').classList.toggle('active');
 }
