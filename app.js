@@ -25,7 +25,7 @@ let player;
 let videoIds = [];
 let shuffledVideoIds = [];
 let currentIndex = 0;
-let isMuted = true;
+let isFirstLoad = true;
 
 function onYouTubeIframeAPIReady() {
     fetchVideoIds().then(response => {
@@ -40,14 +40,14 @@ function createPlayer() {
         height: '75vh',
         width: '75vw',
         playerVars: {
-            autoplay: 1,
+            autoplay: isFirstLoad ? 1 : 0,
             controls: 0,
             disablekb: 1,
             rel: 0,
             modestbranding: 1,
             showinfo: 0,
             playsinline: 1,
-            mute: isMuted ? 1 : 0
+            mute: isFirstLoad ? 1 : 0
         },
         events: {
             'onReady': onPlayerReady,
@@ -57,9 +57,13 @@ function createPlayer() {
 }
 
 function onPlayerReady(event) {
-    event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+    if (isFirstLoad) {
+        isFirstLoad = false;
+        setTimeout(() => {
+            player.unMute();
+        }, 1000); // Delay unmuting to ensure the video has started playing
+    }
     setInterval(updateProgressBar, 200);
-    updateAudioButton();
 }
 
 function onPlayerStateChange(event) {
@@ -75,22 +79,6 @@ function playNextVideo() {
         shuffledVideoIds = shuffleArray(videoIds);
     }
     player.loadVideoById(shuffledVideoIds[currentIndex].id);
-    updateAudioButton();
-}
-
-function toggleMute() {
-    isMuted = !isMuted;
-    player.setVolume(isMuted ? 0 : 100);
-    updateAudioButton();
-}
-
-function updateAudioButton() {
-    const audioButton = document.getElementById('audio');
-    if (isMuted) {
-        audioButton.classList.add('muted');
-    } else {
-        audioButton.classList.remove('muted');
-    }
 }
 
 function updateProgressBar() {
@@ -101,4 +89,3 @@ function updateProgressBar() {
 
 document.getElementById('logo').addEventListener('click', playNextVideo);
 document.getElementById('next').addEventListener('click', playNextVideo);
-document.getElementById('audio').addEventListener('click', toggleMute);
