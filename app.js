@@ -26,22 +26,9 @@ let videoIds = [];
 let shuffledVideoIds = [];
 let currentIndex = 0;
 let isMuted = true;
-let captions = {
-  en: "English",
-  es: "Español",
-  "zh-Hans": "中文",
-  hi: "हिन्दी",
-  ar: "العربية",
-  ru: "Русский",
-  he: "עברית",
-  bn: "বাংলা",
-  th: "ไทย",
-  fr: "Français",
-  de: "Deutsch"
-};
 
 function onYouTubeIframeAPIReady() {
-  fetchVideoIds().then(response => {
+  fetchVideoIds().then((response) => {
     videoIds = response;
     shuffledVideoIds = shuffleArray(videoIds);
     createPlayer();
@@ -50,8 +37,8 @@ function onYouTubeIframeAPIReady() {
 
 function createPlayer() {
   player = new YT.Player('player', {
-    height: '360',
-    width: '640',
+    height: '75vh',
+    width: '75vw',
     playerVars: {
       autoplay: 1,
       controls: 0,
@@ -60,17 +47,19 @@ function createPlayer() {
       modestbranding: 1,
       showinfo: 0,
       playsinline: 1,
-      mute: isMuted ? 1 : 0
+      mute: 1,
+      enablejsapi: 1
     },
     events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+    },
   });
 }
 
 function onPlayerReady(event) {
-  event.target.loadVideoById(shuffledVideoIds[currentIndex].id);
+  player.loadVideoById(shuffledVideoIds[currentIndex].id);
+  player.setVolume(100);
   setInterval(updateProgressBar, 200);
 }
 
@@ -91,34 +80,22 @@ function playNextVideo() {
 
 function toggleMute() {
   isMuted = !isMuted;
-  player.setVolume(isMuted ? 0 : 100);
-  document.getElementById('audio').classList.toggle('muted');
+  if (isMuted) {
+    player.mute();
+    document.getElementById('audio').style.opacity = '0.5';
+  } else {
+    player.unMute();
+    document.getElementById('audio').style.opacity = '1';
+  }
+  document.getElementById('audio').classList.toggle('active');
 }
 
 function updateProgressBar() {
-  let playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
-  let progressBar = document.getElementById('progress-bar');
+  const playerProgress = (player.getCurrentTime() / player.getDuration()) * 100;
+  const progressBar = document.getElementById('progress-bar');
   progressBar.style.width = playerProgress + '%';
-}
-
-function activateCaptions(lang) {
-  player.setOption('captions', 'track', { languageCode: lang, 'kind': 'asr' });
-}
-
-function deactivateCaptions() {
-  player.setOption('captions', 'track', null);
 }
 
 document.getElementById('logo').addEventListener('click', playNextVideo);
 document.getElementById('next').addEventListener('click', playNextVideo);
 document.getElementById('audio').addEventListener('click', toggleMute);
-
-let captionLinks = document.getElementsByClassName('caption-link');
-for (let i = 0; i < captionLinks.length; i++) {
-  captionLinks[i].addEventListener('click', function (e) {
-    e.preventDefault();
-    let lang = this.getAttribute('data-lang');
-    deactivateCaptions();
-    activateCaptions(lang);
-  });
-}
