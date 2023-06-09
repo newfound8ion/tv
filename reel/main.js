@@ -24,7 +24,9 @@ videoIds.forEach(videoId => {
         id: videoId,
         width: window.innerWidth,
         height: window.innerHeight,
-        autoplay: false,
+        byline: false,
+        portrait: false,
+        title: false,
         responsive: true,
     };
 
@@ -44,3 +46,6 @@ videoIds.forEach(videoId => {
 
     observer.observe(videoWrapper);
 });
+
+// Ensure the first video plays when the page is loaded
+players[0].instance.play();
