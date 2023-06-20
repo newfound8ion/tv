@@ -60,14 +60,11 @@
         #start-button:before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 0;
-            height: 0;
+            top: 35%;
+            left: 25%;
             border-style: solid;
-            border-width: 0 25px 43.3px 25px;
-            border-color: transparent transparent white transparent;
+            border-width: 20px 0 20px 34.64px;
+            border-color: transparent transparent transparent white;
         }
     </style>
 </head>
@@ -94,20 +91,16 @@
 
         function loadAndPlayVideos() {
             // Iterate through the video IDs and create a new Vimeo player for each one
-            videoIds.forEach(function(videoId) {
+            videoIds.forEach(function(videoId, index) {
                 // The options for the Vimeo player
                 var options = {
                     id: videoId,
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    autoplay: false, 
-                    loop: true,
-                    background: false, 
-                    responsive: true,
-                    byline: false,
-                    portrait: false,
-                    title: false,
-                    muted: false
+                    autoplay: false,
+                    loop: false,
+                    background: true, 
+                    muted: true
                 };
 
                 // Create a new div element for the player to live in
@@ -120,9 +113,21 @@
 
                 // If this is the first player, start playing it
                 if (initialPlay) {
-                    player.play();
                     initialPlay = false;
+                    player.setVolume(1);
+                    player.play();
                 }
+
+                // When this player comes into view, play it and pause the others
+                player.on('play', function() {
+                    videoIds.forEach(function(id, i) {
+                        if (i !== index) {
+                            var otherPlayerElement = document.getElementsByClassName('video-wrapper')[i];
+                            var otherPlayer = new Vimeo.Player(otherPlayerElement);
+                            otherPlayer.pause();
+                        }
+                    });
+                });
             });
         }
     </script>
