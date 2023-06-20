@@ -75,10 +75,10 @@
     <!-- The video player will be appended here -->
     </div>
 
-  <script src="https://player.vimeo.com/api/player.js"></script>
+<script src="https://player.vimeo.com/api/player.js"></script>
 <script>
     // Your video IDs
-    var videoIds = ["837978443", "837978321", "837978227", "837978066", "837977965" ]; 
+    var videoIds = ["179509486", "171711330", "70405006", "615260697", "49258551" ]; 
 
     // When the start button is clicked, hide it and start the videos
     document.getElementById('start-button').addEventListener('click', function() {
@@ -95,7 +95,7 @@
                 width: window.innerWidth,
                 height: window.innerHeight,
                 autoplay: false,
-                loop: false,
+                loop: true,
                 background: true,
                 muted: true
             };
@@ -112,13 +112,16 @@
         // Create an Intersection Observer to watch when videos come into view
         var observer = new IntersectionObserver(function(entries, observer) {
             entries.forEach(function(entry) {
+                // Get the player associated with the video
+                var player = players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])];
+                
                 // If the video is in view, play it, else pause it
                 if (entry.isIntersecting) {
-                    players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].setVolume(1).then(function() {
-                        players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].play();
+                    player.setVolume(1).then(function() {
+                        player.play();
                     });
                 } else {
-                    players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].pause();
+                    player.pause();
                 }
             });
         }, { threshold: 0.5 });
@@ -129,6 +132,7 @@
         });
     }
 </script>
+
 
 
 </body>
