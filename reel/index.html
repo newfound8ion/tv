@@ -40,6 +40,7 @@
             width: 100vw;
             height: 100vh;
             scroll-snap-align: start;
+            position: relative;
         }
 
         #start-button {
@@ -59,12 +60,13 @@
         #start-button:before {
             content: '';
             position: absolute;
-            top: 30%;
-            left: 35%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 0 20px 34.64px 20px;
+            border-width: 0 25px 43.3px 25px;
             border-color: transparent transparent white transparent;
         }
     </style>
@@ -98,10 +100,13 @@
                     id: videoId,
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    autoplay: true,
+                    autoplay: false, 
                     loop: true,
-                    background: true, // This hides most of the player controls
+                    background: false, 
                     responsive: true,
+                    byline: false,
+                    portrait: false,
+                    title: false
                 };
 
                 // Create a new div element for the player to live in
