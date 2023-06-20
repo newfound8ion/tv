@@ -78,7 +78,7 @@
 <script src="https://player.vimeo.com/api/player.js"></script>
 <script>
     // Your video IDs
-    var videoIds = ["179509486", "171711330", "70405006", "615260697", "49258551" ]; 
+    var videoIds = ["837978443", "837978321", "837978227", "837978066", "837977965" ]; 
 
     // When the start button is clicked, hide it and start the videos
     document.getElementById('start-button').addEventListener('click', function() {
@@ -122,6 +122,7 @@
                     });
                 } else {
                     player.pause();
+                    player.setVolume(0);
                 }
             });
         }, { threshold: 0.5 });
@@ -132,6 +133,7 @@
         });
     }
 </script>
+
 
 
 
