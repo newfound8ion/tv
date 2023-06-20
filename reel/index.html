@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YMT320RGLJ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YMT320RGLJ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-  gtag('config', 'G-YMT320RGLJ');
-</script>
+        gtag('config', 'G-YMT320RGLJ');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newlife Reels</title>
+
     <style>
         body, html {
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            background: black;
         }
 
         #container {
@@ -38,14 +41,84 @@
             height: 100vh;
             scroll-snap-align: start;
         }
+
+        #start-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: black;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #start-button:before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 35%;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 20px 34.64px 20px;
+            border-color: transparent transparent white transparent;
+        }
     </style>
 </head>
 <body>
+    <button id="start-button"></button>
+
     <div id="container">
     <!-- The video player will be appended here -->
     </div>
 
     <script src="https://player.vimeo.com/api/player.js"></script>
-    <script src="main.js"></script>
+    <script>
+        // Your video IDs
+        var videoIds = ["179509486", "171711330", "70405006", "615260697", "49258551"];
+
+        // The initial play state
+        var initialPlay = true;
+
+        // When the start button is clicked, hide it and start the videos
+        document.getElementById('start-button').addEventListener('click', function() {
+            this.style.display = 'none';
+            loadAndPlayVideos();
+        });
+
+        function loadAndPlayVideos() {
+            // Iterate through the video IDs and create a new Vimeo player for each one
+            videoIds.forEach(function(videoId) {
+                // The options for the Vimeo player
+                var options = {
+                    id: videoId,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    autoplay: true,
+                    loop: true,
+                    background: true, // This hides most of the player controls
+                    responsive: true,
+                };
+
+                // Create a new div element for the player to live in
+                var videoElement = document.createElement('div');
+                videoElement.className = 'video-wrapper';
+                document.getElementById('container').appendChild(videoElement);
+
+                // Create and embed the player in the div
+                var player = new Vimeo.Player(videoElement, options);
+
+                // If this is the first player, start playing it
+                if (initialPlay) {
+                    player.play();
+                    initialPlay = false;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
