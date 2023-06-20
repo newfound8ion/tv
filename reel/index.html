@@ -75,7 +75,7 @@
     <!-- The video player will be appended here -->
     </div>
 
-    <script src="https://player.vimeo.com/api/player.js"></script>
+  <script src="https://player.vimeo.com/api/player.js"></script>
 <script>
     // Your video IDs
     var videoIds = ["837978443", "837978321", "837978227", "837978066", "837977965" ]; 
@@ -96,7 +96,7 @@
                 height: window.innerHeight,
                 autoplay: false,
                 loop: false,
-                background: true, 
+                background: true,
                 muted: true
             };
 
@@ -109,30 +109,27 @@
             return new Vimeo.Player(videoElement, options);
         });
 
-        // Start playing the first video
-        players[0].setVolume(1);
-        players[0].play();
-
-        // Set up a scroll event listener to pause, mute, play, and unmute the videos as needed
-        window.addEventListener('scroll', function() {
-            players.forEach(function(player, index) {
-                // Get the coordinates of the player's div
-                var rect = player.element.getBoundingClientRect();
-
-                // Check if the player's div is fully in view
-                if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-                    // The player's div is in view, play the video and unmute it
-                    player.setVolume(1);
-                    player.play();
+        // Create an Intersection Observer to watch when videos come into view
+        var observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                // If the video is in view, play it, else pause it
+                if (entry.isIntersecting) {
+                    players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].setVolume(1).then(function() {
+                        players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].play();
+                    });
                 } else {
-                    // The player's div is not in view, pause the video and mute it
-                    player.setVolume(0);
-                    player.pause();
+                    players[videoIds.indexOf(entry.target.firstChild.getAttribute('src').split('/')[4])].pause();
                 }
             });
+        }, { threshold: 0.5 });
+
+        // Observe each video
+        document.querySelectorAll('.video-wrapper').forEach(function(video) {
+            observer.observe(video);
         });
     }
 </script>
+
 
 </body>
 </html>
