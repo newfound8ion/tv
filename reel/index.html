@@ -76,60 +76,63 @@
     </div>
 
     <script src="https://player.vimeo.com/api/player.js"></script>
-    <script>
-        // Your video IDs
-        var videoIds = ["837978443", "837978321", "837978227", "837978066", "837977965" ]; 
+<script>
+    // Your video IDs
+    var videoIds = ["837978443", "837978321", "837978227", "837978066", "837977965" ]; 
 
-        // The initial play state
-        var initialPlay = true;
+    // When the start button is clicked, hide it and start the videos
+    document.getElementById('start-button').addEventListener('click', function() {
+        this.style.display = 'none';
+        loadAndPlayVideos();
+    });
 
-        // When the start button is clicked, hide it and start the videos
-        document.getElementById('start-button').addEventListener('click', function() {
-            this.style.display = 'none';
-            loadAndPlayVideos();
+    function loadAndPlayVideos() {
+        // Create a Vimeo player for each video ID
+        var players = videoIds.map(function(videoId, index) {
+            // The options for the Vimeo player
+            var options = {
+                id: videoId,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                autoplay: false,
+                loop: false,
+                background: true, 
+                muted: true
+            };
+
+            // Create a new div element for the player to live in
+            var videoElement = document.createElement('div');
+            videoElement.className = 'video-wrapper';
+            document.getElementById('container').appendChild(videoElement);
+
+            // Create and embed the player in the div
+            return new Vimeo.Player(videoElement, options);
         });
 
-        function loadAndPlayVideos() {
-            // Iterate through the video IDs and create a new Vimeo player for each one
-            videoIds.forEach(function(videoId, index) {
-                // The options for the Vimeo player
-                var options = {
-                    id: videoId,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
-                    autoplay: false,
-                    loop: false,
-                    background: true, 
-                    muted: true
-                };
+        // Start playing the first video
+        players[0].setVolume(1);
+        players[0].play();
 
-                // Create a new div element for the player to live in
-                var videoElement = document.createElement('div');
-                videoElement.className = 'video-wrapper';
-                document.getElementById('container').appendChild(videoElement);
+        // Set up a scroll event listener to pause, mute, play, and unmute the videos as needed
+        window.addEventListener('scroll', function() {
+            players.forEach(function(player, index) {
+                // Get the coordinates of the player's div
+                var rect = player.element.getBoundingClientRect();
 
-                // Create and embed the player in the div
-                var player = new Vimeo.Player(videoElement, options);
-
-                // If this is the first player, start playing it
-                if (initialPlay) {
-                    initialPlay = false;
+                // Check if the player's div is fully in view
+                if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                    // The player's div is in view, play the video and unmute it
                     player.setVolume(1);
                     player.play();
+                } else {
+                    // The player's div is not in view, pause the video and mute it
+                    player.setVolume(0);
+                    player.pause();
                 }
-
-                // When this player comes into view, play it and pause the others
-                player.on('play', function() {
-                    videoIds.forEach(function(id, i) {
-                        if (i !== index) {
-                            var otherPlayerElement = document.getElementsByClassName('video-wrapper')[i];
-                            var otherPlayer = new Vimeo.Player(otherPlayerElement);
-                            otherPlayer.pause();
-                        }
-                    });
-                });
             });
-        }
-    </script>
+        });
+    }
+</script>
+
 </body>
 </html>
