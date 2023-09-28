@@ -12,9 +12,21 @@
         logo.style.width = (currentWidth * 2) + 'px';
     }
 
-    // Execute the function on window load or another event as needed
+    function createStartButton() {
+        var startButton = document.createElement('button');
+        startButton.id = 'startButton';
+        startButton.innerText = 'Start Video';
+        document.body.appendChild(startButton);
+
+        startButton.addEventListener('click', function() {
+            window.playerModule.play();
+            this.remove(); // Remove start button after it's clicked
+        });
+    }
+
     window.onload = function() {
         doubleLogoWidth();
+        createStartButton();
     };
 
     window.uiModule = {
