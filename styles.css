@@ -46,7 +46,6 @@ body {
 
 #logo {
     left: calc(50vw - 37.5vw);
-    background-image: url('download.png');
     background-size: cover;
 }
 
