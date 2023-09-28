@@ -12,6 +12,7 @@
             }
         });
     }
+    
 
     function onPlayerReady(event) {
         event.target.mute(); // Start with muted audio
